@@ -18,7 +18,7 @@ then
   fi
 
 else
-  version=newverson
+  version=$newverson
   echo -e "\nNew version: $version"
 fi
 
