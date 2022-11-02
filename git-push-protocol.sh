@@ -5,6 +5,9 @@ version="0.0.3"
 echo -e "Commit Version [12.7.3]: "
 read newversion
 
+echo -e "Commit message"
+read message
+
 if [[$newversion -eq ""]]
 then
   echo -e -n "\nVersion: $version"
@@ -23,5 +26,6 @@ fi
 
 git add .
 
-git commit -m "(Version $version)"
+git commit -m "(Version $version) $message"
+git push --set-upstream origin main
 git push
