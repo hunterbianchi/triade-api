@@ -7,8 +7,16 @@ read newversion
 
 if [[$newversion -eq ""]]
 then
-  echo -e "\nVersion: $version"
-  
+  echo -e -n "\nVersion: $version"
+  echo -e "\nAgree?"
+  read answer
+  if [[$answer -eq "y"]]
+  then
+    echo
+  else
+    exit 0
+  fi
+
 else
   version=newverson
   echo -e "\nNew version: $version"
