@@ -16,7 +16,6 @@ then
   else
     exit 0
   fi
-
 else
   version=$newverson
   echo -e "\nNew version: $version"
@@ -25,3 +24,4 @@ fi
 git add .
 
 git commit -m "(Version $version)"
+git push
