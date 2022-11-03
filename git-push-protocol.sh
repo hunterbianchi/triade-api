@@ -49,7 +49,7 @@ fullmessage="("$version") "$message
 git add .
 
 git commit -m "$fullmessage"
-git push
+git push origin main
 
 
 # fagocitose do macrofagos
