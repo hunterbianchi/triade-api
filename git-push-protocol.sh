@@ -1,62 +1,55 @@
 #!/bin/bash
 
-version="0.0.3"
-
-num1=$1
-num2=$2
-
-declare -i x=${num1} y=${num2} z=x+y
-
-echo $x + $y = $z
-
-expr ${num1} + ${num2}
-
-echo -e ${num1} + ${num2} | bc
-
-echo $((x=${num1}, y=${num2}, x+y))
-
-[ ${num1} -gt ${num2} ]; echo $?
-
-[ $num1 -gt $num2 ]; echo $?
+#[[ "string1" == "string2" ]] && echo "Equal" || echo "Not equal"
 
 
-let e=4+4 | echo $e
+#num1=$1
+#num2=$2
+#
+#declare -i x=${num1} y=${num2} z=x+y
+#
+#echo $x + $y = $z
+#
+#expr ${num1} + ${num2}
+#
+#echo -e ${num1} + ${num2} | bc
+#
+#echo $((x=${num1}, y=${num2}, x+y))
+#
+#[ ${num1} -gt ${num2} ]; echo $?
+#
+#[ $num1 -gt $num2 ]; echo $?
+#
+#
+#let e=4+4 | echo $e
+#
+#awk 'BEGIN { x = 3; y = 2; print "x + y = "(x+y)}'
+#
 
-awk 'BEGIN { x = 3; y = 2; print "x + y = "(x+y)}'
+version=$(grep -o '"version": "[^"]*' package.json | grep -o '[^"]*$')
 
-echo -e "Commit Version [12.7.3]: "
+echo -e "Current version:\n\t"$version"\n"
 
-read newversion
+read -p "New Commit Version ["$version"]: " newversion
 
-echo -e "Commit message:\n\t"
+# [[ $newversion == $version ]] && echo "Equal" || echo "Not equal"
 
-read message
+read -p "Commit Message: " message
 
-echo -e "\n"
+echo ">> "$message
 
-
-if [[$newversion -eq ""]]
-then
-  echo -e -n "\nVersion: $version"
-  echo -e "\nAgree?"
-  read answer
-  if [[$answer -eq "y"]]
-  then
-    echo
-  else
-    exit 0
-  fi
+if [[ $newversion == "" ]] ; then
+  echo -e "\nVersion:\n\t$version\n"
 else
-  version=$newverson
-  echo -e "\nNew version: $version"
+  version=$newversion
 fi
 
-echo $[ [$num1 -gt $num2] ]
+fullmessage="("$version") "$message
 
 git add .
 
-git commit -m "(Version $version) $message"
-git push --set-upstream origin main
+git commit -m "$fullmessage"
 git push
+
 
 # fagocitose do macrofagos
