@@ -249,7 +249,7 @@ export default function Home(props: any) {
   return (
     <S.Wrapper>
       <S.Float>
-        {/* <S.ChainHeader>
+        <S.ChainHeader>
           <S.HashWrapper> 
             {`Genesis Hash: ${SHA256('TRÍADE').toString()}`}
           </S.HashWrapper>
@@ -291,7 +291,7 @@ export default function Home(props: any) {
             <p>:</p>
             <input type={'text'}/>
           </label>
-        </S.Footer> */}
+        </S.Footer>
       </S.Float>
 
       {/* {isLoading && <Loading />}
