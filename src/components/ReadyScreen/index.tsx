@@ -26,6 +26,7 @@ export default function ReadyScreen({}: any){
         <S.Wrapper>
             <S.MetaverseList>
                 <Image
+                alt={'Oasis image'}
                 src={metabook}
                 quality={100}
                 layout={'intrinsic'} />

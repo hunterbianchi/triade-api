@@ -28,3 +28,4 @@ sed -i -f $SED_CMD $JSFILE3
 echo -e "after:"
 cat $copy
 exit 0
+
