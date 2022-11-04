@@ -250,7 +250,7 @@ export default function Home(props: any) {
     <S.Wrapper>
       <S.Float>
         <S.ChainHeader>
-          <S.HashWrapper>
+          <S.HashWrapper> 
             {`Genesis Hash: ${SHA256('TRÍADE').toString()}`}
           </S.HashWrapper>
           <S.HashWrapper>
@@ -271,7 +271,7 @@ export default function Home(props: any) {
             {`Fee: ${50}`}
           </S.ChainInfoWrapper>
         </S.ChainHeader>
-        <S.ChainContainer>
+        {/* <S.ChainContainer>
           {mock.map((element)=>{
             return(
               <Block key={Math.random()} data={element}/>
@@ -279,7 +279,7 @@ export default function Home(props: any) {
           })}
           
         </S.ChainContainer>
-        <S.Footer>
+        <S.Footer>l
         
         {JSON.stringify({
             test: "json"
@@ -291,7 +291,7 @@ export default function Home(props: any) {
             <p>:</p>
             <input type={'text'}/>
           </label>
-        </S.Footer>
+        </S.Footer> */}
       </S.Float>
 
       {/* {isLoading && <Loading />}
