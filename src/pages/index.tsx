@@ -358,7 +358,7 @@ export default function Home(props: any) {
 
 //===================================================================
 
-
+/* 
 export async function getServerSideProps(context: any) {
 
   const cookies = parseCookies(context)
@@ -429,3 +429,4 @@ export async function getServerSideProps(context: any) {
   }
 
 }
+ */
