@@ -249,7 +249,7 @@ export default function Home(props: any) {
   return (
     <S.Wrapper>
       <S.Float>
-        <S.ChainHeader>
+        {/* <S.ChainHeader>
           <S.HashWrapper> 
             {`Genesis Hash: ${SHA256('TRÍADE').toString()}`}
           </S.HashWrapper>
@@ -271,7 +271,7 @@ export default function Home(props: any) {
             {`Fee: ${50}`}
           </S.ChainInfoWrapper>
         </S.ChainHeader>
-        {/* <S.ChainContainer>
+        <S.ChainContainer>
           {mock.map((element)=>{
             return(
               <Block key={Math.random()} data={element}/>
