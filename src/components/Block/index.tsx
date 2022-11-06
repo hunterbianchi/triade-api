@@ -1,8 +1,17 @@
 import * as S from './BlockStyled'
 import * as F from 'react-icons/fa'
+import { useEffect } from 'react'
 
 export default function Block(props: any){
+    /* const data = {
+        index: 378,
+        timestamp: ``,
+        nonce: 7752,
+        hash: `efc9e923fc16cda2446214dc00fda19093e11913a2ec49aef92f56dad6c81396`,
+    } */
     const {data} = props
+
+
     return (
         <S.Wrapper>
             <S.Topbar>
@@ -37,7 +46,7 @@ export default function Block(props: any){
                 </S.TopSec1>
                 <S.TopSec2>
                     <S.HashWrapper>
-                        {`${data.hash}`}
+                        {`Hash: ${data.hash}`}
                     </S.HashWrapper>
                     <S.CopyHashBtn>
                         <F.FaCopy/>

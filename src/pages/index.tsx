@@ -48,13 +48,13 @@ export default function Home(props: any) {
   const [endpoint, setEndpoint] = useState<string>()
   const [body, setBody] = useState<string>()
   const [rewardAddress, setRewardAddress] = useState<string>()
-  const [baseURL, setBaseURL] = useState<string>(props.baseURL)
-  const [chain, setChain] = useState<Array<any>>(props.chain)
-  const [pendings, setPendings] = useState<any>({})
-
-  const [offerList, setOfferList] = useState<any>(props.offerList)
-  const [orderList, setOrderList] = useState<any>(props.offerList)
-  const [chainHeader, setChainHeader] = useState<any>(props.chainHeader)
+  // const [baseURL, setBaseURL] = useState<string>(props.baseURL)
+  // const [chain, setChain] = useState<Array<any>>(props.chain)
+  // const [pendings, setPendings] = useState<any>({})
+// 
+  // const [offerList, setOfferList] = useState<any>(props.offerList)
+  // const [orderList, setOrderList] = useState<any>(props.offerList)
+  // const [chainHeader, setChainHeader] = useState<any>(props.chainHeader)
 
   const [openMethods, setOpenMethods] = useState<boolean>(false)
   const [showing, setShowing] = useState<string>('chain')
@@ -113,7 +113,8 @@ export default function Home(props: any) {
       return balance
     }
     */
-
+   
+/* 
   async function fetchEndpoint(e: any) {
 
     e.preventDefault()
@@ -211,13 +212,9 @@ export default function Home(props: any) {
     }
 
   }
+ */
 
   useEffect(()=>{
-    alert(JSON.stringify(chain))
-    alert(JSON.stringify(chainHeader))
-    alert(JSON.stringify(offerList))
-    alert(JSON.stringify(orderList))
-    alert(JSON.stringify(pendings))
   }, [])
 
   const mock:any[] = [{
@@ -284,9 +281,6 @@ export default function Home(props: any) {
         {JSON.stringify({
             test: "json"
           })}
-          {JSON.stringify(offerList)}
-          {JSON.stringify(orderList)}
-          {JSON.stringify(chainHeader)}
           <label>
             <p>:</p>
             <input type={'text'}/>

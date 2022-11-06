@@ -81,6 +81,7 @@ export const ChainContainer = styled.div<HomeType>`
     font-size: 10px;
     border: 1px solid #08f8;
     overflow: auto;
+    z-index: 1;
 `
 
 export const Footer = styled.div<HomeType>`

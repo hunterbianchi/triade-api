@@ -24,7 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   )
 }
-
+/* 
 export async function getServerSideProps(context: any) {
 
   const cookies = parseCookies(context)
@@ -94,4 +94,4 @@ export async function getServerSideProps(context: any) {
     }
   }
 
-}
+} */
