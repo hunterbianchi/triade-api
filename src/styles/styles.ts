@@ -21,6 +21,7 @@ export const Float = styled.div<HomeType>`
     position: absolute;
     top: 0px;
     background: #bbd;
+    z-index: 2;
 `
 
 export const ChainHeader = styled.div<HomeType>`
@@ -31,6 +32,7 @@ export const ChainHeader = styled.div<HomeType>`
     background: #fff8;
     font-size: 8px;
     border: 1px solid #08f8;
+    z-index: 1;
 `
 
 export const HashWrapper = styled.div<HomeType>`
@@ -81,7 +83,7 @@ export const ChainContainer = styled.div<HomeType>`
     font-size: 10px;
     border: 1px solid #08f8;
     overflow: auto;
-    z-index: 1;
+    z-index: 3;
 `
 
 export const Footer = styled.div<HomeType>`

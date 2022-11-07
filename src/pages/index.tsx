@@ -49,12 +49,12 @@ export default function Home(props: any) {
   const [body, setBody] = useState<string>()
   const [rewardAddress, setRewardAddress] = useState<string>()
   // const [baseURL, setBaseURL] = useState<string>(props.baseURL)
-  // const [chain, setChain] = useState<Array<any>>(props.chain)
+  const [myChain, setMyChain] = useState<Array<any>>([])
   // const [pendings, setPendings] = useState<any>({})
 // 
   // const [offerList, setOfferList] = useState<any>(props.offerList)
   // const [orderList, setOrderList] = useState<any>(props.offerList)
-  // const [chainHeader, setChainHeader] = useState<any>(props.chainHeader)
+  const [myChainHeader, setMyChainHeader] = useState<any>({})
 
   const [openMethods, setOpenMethods] = useState<boolean>(false)
   const [showing, setShowing] = useState<string>('chain')
@@ -212,32 +212,92 @@ export default function Home(props: any) {
     }
 
   }
- */
+
+*/
+
+  async function dataFetch(e?: any){
+    e?.preventDefault()
+    try {
+      const newChainHeader = await fetch(`http://localhost:3000/api/chain`, {
+        method: 'GET',
+        headers: {
+          'Content-Type':'application/json'
+        }
+      }).then(res=>res.json()).then(res=>{
+        console.log(`Chain Header:\n`, myChainHeader)
+        return res
+      })
+      setMyChainHeader(newChainHeader)
+
+      console.log(newChainHeader)
+
+      const newChain = await fetch(`http://localhost:3000/api/chain`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+          type: "get-chain",
+          data: []
+        })
+      }).then(res=>res.json()).then(res=>{
+        console.log(res)
+        return res.data
+      })
+      setMyChain(newChain)
+      console.log("jjjj\n",myChain)
+
+      
+      
+    } catch (error) {
+      alert(error)
+    }
+    
+  }
+
+  async function postBlock(e?: any){
+    e?.preventDefault()
+
+    const newBlock: any = {
+      timestamp: new Date().getTime(),
+      data: ['TRIADE'],
+      previousHash: myChain[myChain.length-1]?.hash,
+      nonce: 1732
+    }
+    newBlock.hash = SHA256(newBlock.timestamp+newBlock.previousHash+JSON.stringify(newBlock.data)+newBlock.nonce).toString()
+    const newChain = await fetch(`http://localhost:3000/api/chain`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        rewardAddress: 'hunter.bianchi',
+        type: "new-block",
+        data: newBlock
+      })
+    }).then(res=>res.json()).then(res=>{
+      console.log(res)
+      return res.data
+    })
+    setMyChain(newChain)
+    console.log("jjjj\n",newChain)
+  }
+
+  /* 
+    chainLength
+    endpointList
+    fee
+    genesisHash
+    lastHash
+    pendingDatas
+    target
+  */
 
   useEffect(()=>{
+    setInterval(()=>{
+      dataFetch()
+    }, 4000)
   }, [])
-
-  const mock:any[] = [{
-    index: 104830,
-    timestamp: new Date().getTime(),
-    nonce: 3872,
-    hash: 'c40238097fd7ebb8d345217548bf274fe7ab71bec899a2d82e872f1dc441001e'
-  },{
-    index: 104831,
-    timestamp: new Date().getTime(),
-    nonce: 173972,
-    hash: 'c40238097fd7ebb8d345217548bf274fe7ab71bec899a2d82e872f1dc441001e'
-  },{
-    index: 104832,
-    timestamp: new Date().getTime(),
-    nonce: 124573,
-    hash: 'c40238097fd7ebb8d345217548bf274fe7ab71bec899a2d82e872f1dc441001e'
-  },{
-    index: 104833,
-    timestamp: new Date().getTime(),
-    nonce: 7344,
-    hash: 'c40238097fd7ebb8d345217548bf274fe7ab71bec899a2d82e872f1dc441001e'
-  }]
 
 
   //===================================================================
@@ -246,13 +306,18 @@ export default function Home(props: any) {
   return (
     <S.Wrapper>
       <S.Float>
+        {myChainHeader &&
+
         <S.ChainHeader>
+
           <S.HashWrapper> 
-            {`Genesis Hash: ${SHA256('TRÍADE').toString()}`}
+            {`Genesis Hash: ${myChainHeader.genesisHash}`}
           </S.HashWrapper>
+          
           <S.HashWrapper>
-            {`Last Hash: ${SHA256('META').toString()}`}
+            {`Last Hash: ${myChainHeader.lastHash}`}
           </S.HashWrapper>
+
           <S.NetworkInfoWrapper>
             {`Pending Tokens: ${2345}`}
             {` - `}
@@ -260,35 +325,36 @@ export default function Home(props: any) {
             {` - `}
             {`Miners: ${352}Mi`}
           </S.NetworkInfoWrapper>
+
           <S.ChainInfoWrapper>
-            {`Chain Length: ${104833}`}
+            {`Chain Length: ${myChainHeader.chainLength}`}
             {` - `}
-            {`Target: ${0x00017320}`}
+            {`Target: ${myChainHeader.target}`}
             {` - `}
-            {`Fee: ${50}`}
+            {`Fee: ${myChainHeader.fee}`}
           </S.ChainInfoWrapper>
-        </S.ChainHeader>
+
+        </S.ChainHeader>}
+
         <S.ChainContainer>
-          {mock.map((element)=>{
+          {myChain && myChain.map((block)=>{
             return(
-              <Block key={Math.random()} data={element}/>
+              <Block key={Math.random()} data={block}/>
             )
           })}
-          
         </S.ChainContainer>
-        <S.Footer>l
-        
-        {JSON.stringify({
-            test: "json"
-          })}
-          <label>
+
+        <S.Footer>
+          <form onSubmit={dataFetch}>
             <p>:</p>
             <input type={'text'}/>
-          </label>
+            <button>Get Data API</button>
+          </form>
         </S.Footer>
       </S.Float>
 
-      {/* {isLoading && <Loading />}
+      {/*
+      {isLoading && <Loading />}
 
       <S.Form onSubmit={fetchEndpoint}>
         <S.InputContainer>
@@ -342,7 +408,7 @@ export default function Home(props: any) {
           <PendingDisplay key={dataHash} data={pending} />
         )
       })}</S.PendingsContainer>}
- */}
+      */}
 
     {openReadyScreen && <ReadyScreen/>}
     </S.Wrapper>

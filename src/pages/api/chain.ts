@@ -161,17 +161,14 @@ export default async function handle (req: any, res: any){
     )
 
     if (req.method === 'OPTIONS') {
-
         res.status(200).end()
         return
-        
     }
 
     const { method } = req
     
     res.setHeader('Access-Control-Allow-Origin','*')
 
-    
     if(method === 'POST'){
         
         const body = req.body
@@ -331,8 +328,7 @@ export default async function handle (req: any, res: any){
             const rewardAddress = req.body.rewardAddress
 
             if(block.previousHash === chain[chain.length -1].hash && block.hash === SHA256(block.timestamp + block.previousHash + JSON.stringify(block.data) + block.nonce).toString()){
-
-                chain.push(block)
+                addBlock(block)
                 res.json(chain)
                 return
             }else{
