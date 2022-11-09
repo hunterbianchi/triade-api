@@ -25,6 +25,7 @@ import PendingDisplay from '../components/PendingDisplay'
 import MineBtn from '../components/MineBtn'
 import ReadyScreen from '../components/ReadyScreen'
 import Block from '../components/Block'
+import Image from 'next/image'
 
 
 const elliptic = require("elliptic").ec
@@ -34,40 +35,70 @@ export type HomeType = {
   viewMobileMode?: boolean;
   method?: string;
   highlight?: boolean;
+  isLoading?: boolean;
   readScreenPercent?: number;
   countDown?: number;
 }
 
+
+import image from "../images/universe.jpg"
 //===================================================================
 
 export default function Home(props: any) {
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [ isLoading, setIsLoading ] = useState<boolean>(false)
 
-  const [method, setMethod] = useState<string>('get')
-  const [endpoint, setEndpoint] = useState<string>()
-  const [body, setBody] = useState<string>()
-  const [rewardAddress, setRewardAddress] = useState<string>()
-  // const [baseURL, setBaseURL] = useState<string>(props.baseURL)
-  const [myChain, setMyChain] = useState<Array<any>>([])
-  // const [pendings, setPendings] = useState<any>({})
+  const [ method, setMethod ] = useState<string>('get')
+  const [ endpoint, setEndpoint ] = useState<string>()
+  const [ body, setBody ] = useState<string>()
+  const [ rewardAddress, setRewardAddress ] = useState<string>()
+  // const [ baseURL, setBaseURL ] = useState<string>(props.baseURL)
+  // const [ pendings, setPendings ] = useState<any>({})
 // 
-  // const [offerList, setOfferList] = useState<any>(props.offerList)
-  // const [orderList, setOrderList] = useState<any>(props.offerList)
-  const [myChainHeader, setMyChainHeader] = useState<any>({})
-
-  const [openMethods, setOpenMethods] = useState<boolean>(false)
-  const [showing, setShowing] = useState<string>('chain')
+  // const [ offerList, setOfferList ] = useState<any>(props.offerList)
+  // const [ orderList, setOrderList ] = useState<any>(props.offerList)
   
-  const [openReadyScreen, setOpenReadyScreen] = useState<boolean>(false)
+  const [ myChainHeader, setMyChainHeader ] = useState<any>({})
+  const [ myChain, setMyChain ] = useState<Array<any>>([])
+  const [ openMethods, setOpenMethods ] = useState<boolean>(false)
+  const [ showing, setShowing ] = useState<string>('chain')
+  const [ xxx, setXxx ] = useState<Array<any>>([])
+  const [ pendingDatas, setPendingDatas ] = useState<Array<any>>([])
+  const [ endpointList, setEndpointList ] = useState<Array<any>>([])
+  const [ orderList, setOrderList ] = useState<Array<any>>([])
+  const [ offerList, setOfferList ] = useState<Array<any>>([])
+  
+  const [ openReadyScreen, setOpenReadyScreen ] = useState<boolean>(false)
 
-  const [fullnodeList, setFullnodeList] = useState<Array<any>>([])
-  const [endPointList, setEndPointList] = useState<Array<any>>([])
-  const [metaverseList, setMetaverseList] = useState<Array<any>>([{
+  const [ fullnodeList, setFullnodeList] = useState<Array<any>>([])
+  const [ endPointList, setEndPointList] = useState<Array<any>>([])
+  const [ metaverseList, setMetaverseList] = useState<Array<any>>([{
   }])
 
 
   
+function treatResponse(response: any){
+  const {type} = response
+  if(type === 'new-offer-list'){
+    const newOfferList = response.data
+    setOfferList(newOfferList)
+  } else if(type === 'new-order-list'){
+    const newOrderList = response.data
+    setOrderList(newOrderList)
+  } else if(type === 'new-endpoint-list'){
+    const newEndpointList = response.data
+    setEndpointList(newEndpointList)
+  } else if(type === 'new-pending-datas'){
+    const newPendingDatas = response.data
+    setPendingDatas(newPendingDatas)
+  } else if(type === 'new-chain'){
+    const newChain = response.data
+    setMyChain(newChain)
+  } else if(type === 'new-chain-header'){
+    const newChainHeader = response.data
+    setMyChainHeader(newChainHeader)
+  }
+}
 
   function addFullnode({newFullnode}:any){
 
@@ -217,6 +248,7 @@ export default function Home(props: any) {
 
   async function dataFetch(e?: any){
     e?.preventDefault()
+    setIsLoading(true)
     try {
       const newChainHeader = await fetch(`http://localhost:3000/api/chain`, {
         method: 'GET',
@@ -224,12 +256,11 @@ export default function Home(props: any) {
           'Content-Type':'application/json'
         }
       }).then(res=>res.json()).then(res=>{
-        console.log(`Chain Header:\n`, myChainHeader)
-        return res
+        return res.data
       })
       setMyChainHeader(newChainHeader)
 
-      console.log(newChainHeader)
+      console.log("new-chain-header\n",newChainHeader)
 
       const newChain = await fetch(`http://localhost:3000/api/chain`, {
         method: 'POST',
@@ -241,31 +272,69 @@ export default function Home(props: any) {
           data: []
         })
       }).then(res=>res.json()).then(res=>{
-        console.log(res)
+        console.log(res.data)
         return res.data
       })
       setMyChain(newChain)
-      console.log("jjjj\n",myChain)
+      console.log("new-chain\n",newChain)
 
       
       
     } catch (error) {
       alert(error)
     }
+    setIsLoading(false)
     
   }
 
+
   async function postBlock(e?: any){
+
     e?.preventDefault()
+
+    await fetch(`http://localhost:3000/api/chain`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        type: "get-chain-header",
+        data: myChainHeader
+      })
+    }).then(res=>res.json()).then(res=>{
+      console.log(`${res.type}:\n`, res)
+      treatResponse(res)
+      return
+    })
+
+    if(myChainHeader.chainLength > myChain.length && myChainHeader.genesisHash === myChain[0]?.hash ){
+      await fetch(`http://localhost:3000/api/chain`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+          type: "get-chain",
+          data: myChain
+        })
+      }).then(res=>res.json()).then(res=>{
+        console.log(`${res.type}:\n`, res)
+        treatResponse(res)
+        return
+      })
+    }
 
     const newBlock: any = {
       timestamp: new Date().getTime(),
-      data: ['TRIADE'],
-      previousHash: myChain[myChain.length-1]?.hash,
+      contracts: ['New Block'],
+      previousHash: myChain[myChain.length-1].hash,
       nonce: 1732
     }
-    newBlock.hash = SHA256(newBlock.timestamp+newBlock.previousHash+JSON.stringify(newBlock.data)+newBlock.nonce).toString()
-    const newChain = await fetch(`http://localhost:3000/api/chain`, {
+    newBlock.hash = SHA256(newBlock.timestamp+newBlock.previousHash+JSON.stringify(newBlock.contracts)+newBlock.nonce).toString()
+
+    console.log(newBlock)
+
+    await fetch(`http://localhost:3000/api/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
@@ -276,11 +345,10 @@ export default function Home(props: any) {
         data: newBlock
       })
     }).then(res=>res.json()).then(res=>{
-      console.log(res)
-      return res.data
+      console.log(`${res.type}:\n`, res)
+      treatResponse(res)
+      return
     })
-    setMyChain(newChain)
-    console.log("jjjj\n",newChain)
   }
 
   /* 
@@ -294,48 +362,114 @@ export default function Home(props: any) {
   */
 
   useEffect(()=>{
+    dataFetch()
+    setMyChainHeader(myChainHeader)
+    setMyChain(myChain)
     setInterval(()=>{
       dataFetch()
-    }, 4000)
+    }, 60000*1.8)
   }, [])
-
 
   //===================================================================
 
 
-  return (
-    <S.Wrapper>
-      <S.Float>
-        {myChainHeader &&
 
+
+  return (
+    <S.Wrapper isLoading={isLoading}>
+      <S.ImageContainer>
+        <Image
+        quality={100}
+        fill
+        alt="Backgroun Space"
+        src={image}
+        />
+      </S.ImageContainer>
+      <S.Float>
+        
         <S.ChainHeader>
 
-          <S.HashWrapper> 
-            {`Genesis Hash: ${myChainHeader.genesisHash}`}
+          <S.HashWrapper>
+            <S.ContentWrapper isLoading={isLoading}>
+              {myChainHeader.genesisHash ? `Genesis Hash: ${myChainHeader.genesisHash}`
+              :
+              <S.Preloading/>}
+            </S.ContentWrapper>
           </S.HashWrapper>
           
           <S.HashWrapper>
-            {`Last Hash: ${myChainHeader.lastHash}`}
+            <S.ContentWrapper isLoading={isLoading}>
+              {myChainHeader.lastHash ? `Last Hash: ${myChainHeader.lastHash}`
+              :
+              <S.Preloading/>}
+            </S.ContentWrapper>
           </S.HashWrapper>
 
           <S.NetworkInfoWrapper>
-            {`Pending Tokens: ${2345}`}
-            {` - `}
-            {`Nodes: ${325}Mi`}
-            {` - `}
-            {`Miners: ${352}Mi`}
+            <S.PendingsWrapper>
+              {isLoading?
+                <S.Preloading/>
+              :
+                <S.ContentWrapper isLoading={isLoading}>
+                  {myChainHeader.pendingDatas?`Pending Tokens: ${myChainHeader.pendingDatas.length}`
+                  :`Pendings Tokens: 0`}
+                </S.ContentWrapper>
+              }
+            </S.PendingsWrapper>
+            <S.PendingsWrapper>
+              {isLoading?
+                <S.Preloading/>
+              :
+                <S.ContentWrapper isLoading={isLoading}>
+                  {myChainHeader.endpointList?`Nodes: ${myChainHeader.endpointList}`
+                  :
+                  <S.Preloading/>}
+                </S.ContentWrapper>
+              }
+            </S.PendingsWrapper>
+            <S.PendingsWrapper>
+              {isLoading?
+                <S.Preloading/>
+              :
+                <S.ContentWrapper isLoading={isLoading}>
+                  {`Miners: ${352}Mi`}
+                </S.ContentWrapper>
+              }
+            </S.PendingsWrapper>
           </S.NetworkInfoWrapper>
 
           <S.ChainInfoWrapper>
-            {`Chain Length: ${myChainHeader.chainLength}`}
-            {` - `}
-            {`Target: ${myChainHeader.target}`}
-            {` - `}
-            {`Fee: ${myChainHeader.fee}`}
+            <S.PendingsWrapper>
+              {isLoading?
+                <S.Preloading/>
+              :
+                <S.ContentWrapper isLoading={isLoading}>
+                  {myChainHeader.chainLength && `Chain Length: ${myChainHeader.chainLength}`}
+                </S.ContentWrapper>
+              }
+            </S.PendingsWrapper>
+            <S.PendingsWrapper>
+              {isLoading?
+                <S.Preloading/>
+              :
+                <S.ContentWrapper isLoading={isLoading}>
+                  {myChainHeader.target && `Target: ${myChainHeader.target}`}
+                </S.ContentWrapper>
+              }
+            </S.PendingsWrapper>
+            <S.PendingsWrapper>
+              {isLoading?
+                <S.Preloading/>
+              :
+                <S.ContentWrapper isLoading={isLoading}>
+                  {`Fee: ${myChainHeader.fee}`}
+                </S.ContentWrapper>
+              }
+            </S.PendingsWrapper>
           </S.ChainInfoWrapper>
 
-        </S.ChainHeader>}
-
+        </S.ChainHeader>
+        
         <S.ChainContainer>
           {myChain && myChain.map((block)=>{
             return(
@@ -345,8 +479,8 @@ export default function Home(props: any) {
         </S.ChainContainer>
 
         <S.Footer>
-          <form onSubmit={dataFetch}>
-            <p>:</p>
+          <button onClick={dataFetch}>kjhgkjgkjhg</button>
+          <form onSubmit={e=>postBlock(e)}>
             <input type={'text'}/>
             <button>Get Data API</button>
           </form>
@@ -409,8 +543,6 @@ export default function Home(props: any) {
         )
       })}</S.PendingsContainer>}
       */}
-
-    {openReadyScreen && <ReadyScreen/>}
     </S.Wrapper>
   )
 }

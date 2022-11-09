@@ -95,15 +95,21 @@ function addBlock(block: any){
 
 const endpointList: any[] = [baseUrl]
 
-const chainHeader: any = {
-    chainLength: chain.length,
-    lastHash: chain[chain.length - 1].hash,
-    genesisHash: chain[0].hash,
-    pendingDatas: pendingDatas.length,
-    endpointList: endpointList.length,
-    target,
-    fee,
+function getChainHeader(){
+    const ch: any = {
+        chainLength: chain.length,
+        lastHash: chain[chain.length - 1].hash,
+        genesisHash: chain[0].hash,
+        pendingDatas: pendingDatas.length,
+        endpointList: endpointList.length,
+        target,
+        fee,
+    }
+
+    return ch
 }
+
+const chainHeader: any = getChainHeader()
 
 const observers: any = []
 
@@ -325,20 +331,31 @@ export default async function handle (req: any, res: any){
         }else if(type === 'new-block' ){
 
             const block = body.data
-            const rewardAddress = req.body.rewardAddress
+            
+            console.log("New Block", block)
+            console.log("New Hash", block.hash)
+            console.log("New Previous Hash", block.previousHash)
 
-            if(block.previousHash === chain[chain.length -1].hash && block.hash === SHA256(block.timestamp + block.previousHash + JSON.stringify(block.data) + block.nonce).toString()){
+            if(block.previousHash === chain[chain.length -1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
                 addBlock(block)
-                res.json(chain)
+                res.json({
+                    type: 'new-chain',
+                    data: chain
+                })
                 return
-            }else{
-                res.json(chain)
+            } else {
+                res.json({
+                    type: 'new-chain',
+                    data: chain
+                })
                 return
             }
 
         }
         
     }else if(method === 'GET'){
-        res.json(chainHeader)
+        res.json({
+            type: "new-chain-header",
+            data: chainHeader})
     }
 }

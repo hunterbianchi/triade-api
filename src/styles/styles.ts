@@ -2,25 +2,42 @@ import styled from 'styled-components'
 
 import { HomeType } from '../pages'
 
+export const Preloading = styled.div<HomeType>`
+    width: 100%;
+    height: 100%;
+    background: transparent;
+`
+
 export const Wrapper = styled.main<HomeType>`
-    display: flex;
-    flex-direction: column;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    background: #bbd;
+    background: #000;
 
     @media (max-width: 768px) {
         width: 100vw;
         height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: #000;
     }
 `
 
+export const ImageContainer = styled.div<HomeType>`
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    background: transparent;
+`
 export const Float = styled.div<HomeType>`
     width: 100vw;
     position: absolute;
     top: 0px;
-    background: #bbd;
+    background: transparent;
     z-index: 2;
 `
 
@@ -29,7 +46,7 @@ export const ChainHeader = styled.div<HomeType>`
     height: 20vh;
     position: relative;
     top: 0px;
-    background: #fff8;
+    background: transparent;
     font-size: 8px;
     border: 1px solid #08f8;
     z-index: 1;
@@ -42,8 +59,16 @@ export const HashWrapper = styled.div<HomeType>`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff8;
+    background: transparent;
     border: 1px solid #08f8;
+`
+
+export const ContentWrapper = styled.div<HomeType>`
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    opacity: ${({isLoading})=>isLoading?'0':'0.95'};
+    transition: 0.1s ease-in-out;
 `
 
 export const NetworkInfoWrapper = styled.div<HomeType>`
@@ -53,8 +78,13 @@ export const NetworkInfoWrapper = styled.div<HomeType>`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff8;
+    background: transparent;
     border: 1px solid #08f8;
+`
+
+export const PendingsWrapper = styled.div<HomeType>`
+    width: 33.33%;
+    height: 100%;
 `
 
 export const ChainInfoWrapper = styled.div<HomeType>`
@@ -64,7 +94,7 @@ export const ChainInfoWrapper = styled.div<HomeType>`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff8;
+    background: transparent;
     border: 1px solid #08f8;
 `
 
@@ -79,7 +109,7 @@ export const ChainContainer = styled.div<HomeType>`
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
-    background: #fff8;
+    background: transparent;
     font-size: 10px;
     border: 1px solid #08f8;
     overflow: auto;
@@ -89,7 +119,7 @@ export const ChainContainer = styled.div<HomeType>`
 export const Footer = styled.div<HomeType>`
     width: 100vw;
     height: 25vh;
-    background: #fff8;
+    background: transparent;
     font-size: 8px;
     border: 1px solid #08f8;
 `
@@ -116,19 +146,19 @@ export const InputContainer = styled.div<HomeType>`
     height: 3em;
     gap: 16px;
     display: flex;
-    background: #bbd;
+    background: transparent;
 `
 
 export const SendBtn = styled.button<HomeType>`
     height: 100%;
-    background: #88f;
+    background: transparent;
     border: none;
 `
 
 export const BodyContainer = styled.div<HomeType>`
     width: 100vw;
     height: 200px;
-    background: #bbd;
+    background: transparent;
 `
 
 export const MineBtnContainer = styled.div<HomeType>`
@@ -176,27 +206,6 @@ export const SwitchChainBtn = styled.button<HomeType>`
     transition: 0.2s ease-in-out;
 `
 
-export const ChainContainer2 = styled.div<HomeType>`
-
-    width: 100%;
-    height: calc(100vh - 3em - 60px);
-    padding: 0px 10px;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: calc(3em + 60px);
-    overflow: auto;
-    background: #000;
-    padding-top: 20px;
-    color: white;
-
-    ::-webkit-scrollbar{
-        display: none;
-    }
-    -ms-overflow-style:none;
-    scrollbar-width: none;
-`
-
 export const PendingsContainer = styled.div<HomeType>`
     width: 100%;
     height: calc(100vh - 3em - 60px);
@@ -206,7 +215,7 @@ export const PendingsContainer = styled.div<HomeType>`
     position: absolute;
     top: calc(3em + 60px);
     overflow: auto;
-    background: #000;
+    background: transparent;
     padding-top: 20px;
 
 
