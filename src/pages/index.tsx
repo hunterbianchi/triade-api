@@ -546,3 +546,75 @@ function treatResponse(response: any){
     </S.Wrapper>
   )
 }
+
+
+export async function getServerSideProps(context: any) {
+
+  const cookies = parseCookies(context)
+
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL
+
+  const chain: Array<any> = require('../json/chain.json')
+  const genesis = chain[0]
+  console.log(genesis)
+
+  const orderList = {}
+  const offerList = {}
+  const chainHeader = {}
+
+  // console.log(`\nGENESIS HASH:\n${SHA256(genesis.timestamp + genesis.previousHash + JSON.stringify(genesis.data) + genesis.nonce).toString()}\n`)
+
+  try {
+    await fetch(`${baseURL}/chain`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        type: 'get-chain-header',
+        data: {}
+      })
+    }).then((res: any) => res.json()).then((res: any)=>{
+      const { data } = res
+      const newChainHeader = data
+
+      Object.assign(chainHeader, newChainHeader)
+    })
+  } catch (error) {
+    throw new Error(`Error while fetching chain from ${baseURL}/chain`)
+  } finally {
+    try {
+      await fetch(`${baseURL}/chain`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+          type: 'get-chain',
+          data: chain
+        })
+      }).then((response: any) => response.json()).then((response: any)=>{
+        const { data } = response
+        const newChain = data
+  
+        Object.assign(chain, newChain)
+  
+      })
+    }catch (err) {
+      throw new Error(`Error while fetching chain from ${baseURL}/chain`)
+    }
+
+    return {
+      props: {
+        baseURL,
+        chain,
+        privateKey: cookies.PRIVATE_KEY ? cookies.PRIVATE_KEY : '',
+        offerList,
+        orderList,
+        chainHeader,
+        countDown: 10,
+      },
+    }
+  }
+
+}
