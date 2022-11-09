@@ -62,7 +62,7 @@ export default function Home(props: any) {
   const [ myChain, setMyChain ] = useState<Array<any>>([])
   const [ openMethods, setOpenMethods ] = useState<boolean>(false)
   const [ showing, setShowing ] = useState<string>('chain')
-  const [ xxx, setXxx ] = useState<Array<any>>([])
+  const [ baseURL, setBaseURL ] = useState<any>(process.env.NEXT_PUBLIC_BASE_URL)
   const [ pendingDatas, setPendingDatas ] = useState<Array<any>>([])
   const [ endpointList, setEndpointList ] = useState<Array<any>>([])
   const [ orderList, setOrderList ] = useState<Array<any>>([])
@@ -250,7 +250,7 @@ function treatResponse(response: any){
     e?.preventDefault()
     setIsLoading(true)
     try {
-      const newChainHeader = await fetch(`http://localhost:3000/api/chain`, {
+      const newChainHeader = await fetch(`${baseURL}/chain`, {
         method: 'GET',
         headers: {
           'Content-Type':'application/json'
@@ -262,7 +262,7 @@ function treatResponse(response: any){
 
       console.log("new-chain-header\n",newChainHeader)
 
-      const newChain = await fetch(`http://localhost:3000/api/chain`, {
+      const newChain = await fetch(`${baseURL}/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
@@ -292,7 +292,7 @@ function treatResponse(response: any){
 
     e?.preventDefault()
 
-    await fetch(`http://localhost:3000/api/chain`, {
+    await fetch(`${baseURL}/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
@@ -308,7 +308,7 @@ function treatResponse(response: any){
     })
 
     if(myChainHeader.chainLength > myChain.length && myChainHeader.genesisHash === myChain[0]?.hash ){
-      await fetch(`http://localhost:3000/api/chain`, {
+      await fetch(`${baseURL}/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
@@ -334,7 +334,7 @@ function treatResponse(response: any){
 
     console.log(newBlock)
 
-    await fetch(`http://localhost:3000/api/chain`, {
+    await fetch(`${baseURL}/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
