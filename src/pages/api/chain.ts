@@ -96,17 +96,17 @@ function addBlock(block: any){
 const endpointList: any[] = [baseUrl]
 
 function getChainHeader(){
-    const ch: any = {
-        chainLength: chain.length,
-        lastHash: chain[chain.length - 1].hash,
+    const chainHeader: any = {
         genesisHash: chain[0].hash,
+        lastHash: chain[chain.length-1].hash,
         pendingDatas: pendingDatas.length,
         endpointList: endpointList.length,
+        chainLength: chain.length,
         target,
         fee,
     }
 
-    return ch
+    return chainHeader
 }
 
 const chainHeader: any = getChainHeader()
@@ -298,12 +298,12 @@ export default async function handle (req: any, res: any){
             if(body.data.genesisHash === chainHeader.genesisHash){
                 res.json({
                     type: 'new-chain-header',
-                    data: chainHeader
+                    data: getChainHeader()
                 })
             } else {
                 res.json({
                     type: 'new-chain-header',
-                    data: chainHeader
+                    data: getChainHeader()
                 })          
             }
 

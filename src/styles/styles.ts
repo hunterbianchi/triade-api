@@ -32,6 +32,24 @@ export const ImageContainer = styled.div<HomeType>`
     position: absolute;
     top: 0px;
     background: transparent;
+/* 
+    animation-duration: 50s;
+    animation-name: tst;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+
+    @keyframes tst{
+        0%  {
+            transform: translate(0px, 0px) scale(1)
+        }
+        50% {
+            transform: translate(${Math.random()*50}%, ${Math.random()*50}%) scale(2);
+        }
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+    } */
+    overflow: hidden;
 `
 export const Float = styled.div<HomeType>`
     width: 100vw;

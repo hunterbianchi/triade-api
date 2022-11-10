@@ -250,41 +250,56 @@ function treatResponse(response: any){
     e?.preventDefault()
     setIsLoading(true)
     try {
-      const newChainHeader = await fetch(`${baseURL}/chain`, {
+      await fetch(`${baseURL}/chain`, {
         method: 'GET',
         headers: {
           'Content-Type':'application/json'
         }
       }).then(res=>res.json()).then(res=>{
-        return res.data
+        console.log(res.type, res.data)
+        setMyChainHeader(res.data)
       })
-      setMyChainHeader(newChainHeader)
 
-      console.log("new-chain-header\n",newChainHeader)
-
-      const newChain = await fetch(`${baseURL}/chain`, {
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json'
-        },
-        body: JSON.stringify({
-          type: "get-chain",
-          data: []
-        })
-      }).then(res=>res.json()).then(res=>{
-        console.log(res.data)
-        return res.data
-      })
-      setMyChain(newChain)
-      console.log("new-chain\n",newChain)
-
-      
-      
     } catch (error) {
       alert(error)
+      setIsLoading(false)
+    }finally{
+      try {
+        await fetch(`${baseURL}/chain`, {
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+            type: "get-chain",
+            data: myChain
+          })
+        }).then(res=>res.json()).then(res=>{
+          console.log(res.type, res.data)
+          setMyChain(res.data)
+        })      
+      } catch (error) {
+        alert(error)
+        setIsLoading(false)
+      }
     }
     setIsLoading(false)
     
+  }
+
+  function createBlock(){
+
+    const block: any = {
+      timestamp: new Date().getTime(),
+      contracts: ['New Block'],
+      previousHash: myChain[myChain.length-1].hash,
+      nonce: 1732
+    }
+    block.hash = SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()
+  
+    console.log(block)
+
+    return block
   }
 
 
@@ -292,63 +307,72 @@ function treatResponse(response: any){
 
     e?.preventDefault()
 
-    await fetch(`${baseURL}/chain`, {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify({
-        type: "get-chain-header",
-        data: myChainHeader
-      })
-    }).then(res=>res.json()).then(res=>{
-      console.log(`${res.type}:\n`, res)
-      treatResponse(res)
-      return
-    })
-
-    if(myChainHeader.chainLength > myChain.length && myChainHeader.genesisHash === myChain[0]?.hash ){
+    try {
       await fetch(`${baseURL}/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
         },
         body: JSON.stringify({
-          type: "get-chain",
-          data: myChain
+          type: "get-chain-header",
+          data: myChainHeader
         })
       }).then(res=>res.json()).then(res=>{
         console.log(`${res.type}:\n`, res)
-        treatResponse(res)
-        return
+        if(res.type === 'new-chain-header'){
+          const newChainHeader = res.data
+          setMyChainHeader(newChainHeader)
+        }
       })
+    } catch (error) {
+      alert(error)      
+    }finally{
+
+      if(myChainHeader.chainLength > myChain.length && myChainHeader.genesisHash === myChain[0]?.hash ){
+        try {
+          await fetch(`${baseURL}/chain`, {
+            method: 'POST',
+            headers: {
+              'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+              type: "get-chain",
+              data: myChain
+            })
+          }).then(res=>res.json()).then(res=>{
+            console.log(`${res.type}:\n`, res)
+            if(res.type === 'new-chain'){
+              const newChain = res.data
+              setMyChain(newChain)
+            }
+          })
+        } catch (error) {
+          
+        } finally{
+          
+          const newBlock = createBlock()
+      
+          await fetch(`${baseURL}/chain`, {
+            method: 'POST',
+            headers: {
+              'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+              rewardAddress: 'hunter.bianchi',
+              type: "new-block",
+              data: newBlock
+            })
+          }).then(res=>res.json()).then(res=>{
+            console.log(`${res.type}:\n`, res)
+            treatResponse(res)
+            return
+          })
+        }
+        
+      }
+
     }
 
-    const newBlock: any = {
-      timestamp: new Date().getTime(),
-      contracts: ['New Block'],
-      previousHash: myChain[myChain.length-1].hash,
-      nonce: 1732
-    }
-    newBlock.hash = SHA256(newBlock.timestamp+newBlock.previousHash+JSON.stringify(newBlock.contracts)+newBlock.nonce).toString()
-
-    console.log(newBlock)
-
-    await fetch(`${baseURL}/chain`, {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify({
-        rewardAddress: 'hunter.bianchi',
-        type: "new-block",
-        data: newBlock
-      })
-    }).then(res=>res.json()).then(res=>{
-      console.log(`${res.type}:\n`, res)
-      treatResponse(res)
-      return
-    })
   }
 
   /* 
@@ -372,9 +396,6 @@ function treatResponse(response: any){
 
   //===================================================================
 
-
-
-
   return (
     <S.Wrapper isLoading={isLoading}>
       <S.ImageContainer>
@@ -386,22 +407,16 @@ function treatResponse(response: any){
         />
       </S.ImageContainer>
       <S.Float>
-        
         <S.ChainHeader>
-
           <S.HashWrapper>
             <S.ContentWrapper isLoading={isLoading}>
-              {myChainHeader.genesisHash ? `Genesis Hash: ${myChainHeader.genesisHash}`
-              :
-              <S.Preloading/>}
+              {myChainHeader.genesisHash && `Genesis Hash: ${myChainHeader.genesisHash}`}
             </S.ContentWrapper>
           </S.HashWrapper>
           
           <S.HashWrapper>
             <S.ContentWrapper isLoading={isLoading}>
-              {myChainHeader.lastHash ? `Last Hash: ${myChainHeader.lastHash}`
-              :
-              <S.Preloading/>}
+              {myChainHeader.lastHash && `Last Hash: ${myChainHeader.lastHash}`}
             </S.ContentWrapper>
           </S.HashWrapper>
 
@@ -411,8 +426,7 @@ function treatResponse(response: any){
                 <S.Preloading/>
               :
                 <S.ContentWrapper isLoading={isLoading}>
-                  {myChainHeader.pendingDatas?`Pending Tokens: ${myChainHeader.pendingDatas.length}`
-                  :`Pendings Tokens: 0`}
+                  {myChainHeader.pendingDatas>=0 && `Pending Tokens: ${myChainHeader.pendingDatas}`}
                 </S.ContentWrapper>
               }
             </S.PendingsWrapper>
@@ -421,9 +435,7 @@ function treatResponse(response: any){
                 <S.Preloading/>
               :
                 <S.ContentWrapper isLoading={isLoading}>
-                  {myChainHeader.endpointList?`Nodes: ${myChainHeader.endpointList}`
-                  :
-                  <S.Preloading/>}
+                  {myChainHeader.endpointList>=0 && `Nodes: ${myChainHeader.endpointList}`}
                 </S.ContentWrapper>
               }
             </S.PendingsWrapper>
@@ -462,7 +474,7 @@ function treatResponse(response: any){
                 <S.Preloading/>
               :
                 <S.ContentWrapper isLoading={isLoading}>
-                  {`Fee: ${myChainHeader.fee}`}
+                  {myChainHeader.fee && `Fee: ${myChainHeader.fee}`}
                 </S.ContentWrapper>
               }
             </S.PendingsWrapper>
@@ -479,16 +491,20 @@ function treatResponse(response: any){
         </S.ChainContainer>
 
         <S.Footer>
-          <button onClick={dataFetch}>kjhgkjgkjhg</button>
-          <form onSubmit={e=>postBlock(e)}>
+          <button onClick={postBlock}>{`<`}</button>
+          <button onClick={postBlock}>Mock Block</button>
+          <button onClick={postBlock}>{`>`}</button>
+          <form onSubmit={dataFetch}>
             <input type={'text'}/>
             <button>Get Data API</button>
           </form>
+          <button onClick={postBlock}>{`Miner`}</button>
+          <button onClick={postBlock}>{`FullNode`}</button>
+          <button onClick={postBlock}>{`User`}</button>
         </S.Footer>
       </S.Float>
-
-      {/*
-      {isLoading && <Loading />}
+      
+      {/* {isLoading && <Loading />}
 
       <S.Form onSubmit={fetchEndpoint}>
         <S.InputContainer>
@@ -541,8 +557,8 @@ function treatResponse(response: any){
         return (
           <PendingDisplay key={dataHash} data={pending} />
         )
-      })}</S.PendingsContainer>}
-      */}
+      })}</S.PendingsContainer>} */}
+      
     </S.Wrapper>
   )
 }
