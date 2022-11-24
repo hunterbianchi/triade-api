@@ -578,7 +578,6 @@ export async function getServerSideProps(context: any) {
   const offerList = {}
   const chainHeader = {}
 
-  // console.log(`\nGENESIS HASH:\n${SHA256(genesis.timestamp + genesis.previousHash + JSON.stringify(genesis.data) + genesis.nonce).toString()}\n`)
 
   try {
     await fetch(`${baseURL}/chain`, {
@@ -607,7 +606,7 @@ export async function getServerSideProps(context: any) {
         },
         body: JSON.stringify({
           type: 'get-chain',
-          data: chain
+          data:[]
         })
       }).then((response: any) => response.json()).then((response: any)=>{
         const { data } = response

@@ -3,20 +3,10 @@ import { SHA256 } from 'crypto-js'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
-const genesisBlock: any = createGenesisBlock()
+import { BlockChain, Block, Contract } from '../../utils/blockchain'
 
-function createGenesisBlock(){
+const triade = new BlockChain()
 
-    const genesisBlock: any = {
-        timestamp: 1658880000989,
-        nonce:0,
-        contracts:['TRÍADE-CONTRACT'],
-    }
-
-    genesisBlock.hash = SHA256(genesisBlock.timestamp + genesisBlock.nonce + SHA256(JSON.stringify(genesisBlock.contracts)).toString()).toString()
-    console.log(`Genesis Hash: ${genesisBlock.hash}`)
-    return genesisBlock
-}
 
 const offerList: any[] = [{
     type: 'transaction',
@@ -48,68 +38,23 @@ function addOffer(offer:any){
 }
 function removeOffer(offer:any){}
 
-const target: number = retarget()
-
-function retarget(){
-    const target = 0x0001
-    return target
-}
-
-const fee: number = getFee()
-
-function getFee(){
-    const fee: number = 50
-    return fee
-}
-
-const pendingDatas: any = []
-
-function addPendingDatas(clientPendingList: Array<any>){
-
-    const myPendingSet = new Set(pendingDatas)
-
-    for (const pending of clientPendingList) {
-        if(!myPendingSet.has(pending)){
-            pendingDatas.push(pending)
-        }
-    }
-}
-
-function removePendingDatas(deletationPendingList: Array<any>){
-
-    const myPendingSet = new Set(pendingDatas)
-
-    for (const pending of deletationPendingList) {
-        if(myPendingSet.has(pending)){
-            myPendingSet.delete(pending)
-            Object.assign(chain, Array.from(myPendingSet))
-        }
-    }
-}
-
-const chain: any[] = [genesisBlock]
-
-function addBlock(block: any){
-    chain.push(block)
-}
-
-const endpointList: any[] = [baseUrl]
 
 function getChainHeader(){
+
     const chainHeader: any = {
-        genesisHash: chain[0].hash,
-        lastHash: chain[chain.length-1].hash,
-        pendingDatas: pendingDatas.length,
-        endpointList: endpointList.length,
-        chainLength: chain.length,
-        target,
-        fee,
+
+        genesisHash: triade.chain[0].hash,
+        lastHash: triade.chain[triade.chain.length-1].hash,
+        pendingDatas: triade.pendingContracts.length,
+        endpointList: triade.nodes.length,
+        chainLength: triade.chain.length,
+        target: triade.target,
+        fee: triade.fee,
     }
 
     return chainHeader
 }
 
-const chainHeader: any = getChainHeader()
 
 const observers: any = []
 
@@ -120,38 +65,6 @@ function subscribeObserver(command:any){
 function notifyObservers(command:any){
     for (const observerFunction of observers) {
         observerFunction(command)
-    }
-}
-
-
-
-const getReward: Function = ()=> {
-   
-    if(chain.length < 210000){
-
-        const reward = 50
-        return  reward
-
-    }else if(chain.length < 420000){
-
-        const reward = 25
-        return  reward
-
-    }else if(chain.length < 630000){
-
-        const reward = 12.5
-        return  reward
-
-    }else if(chain.length < 840000){
-
-        const reward = 6.25
-        return  reward
-
-    }else{
-
-        const reward = 3.125
-        return reward
-
     }
 }
 
@@ -187,7 +100,7 @@ export default async function handle (req: any, res: any){
                 data: {
                     offerList,
                     orderList,
-                    chainHeader,
+                    chainHeader: getChainHeader()
                 }
             })
             return
@@ -198,104 +111,35 @@ export default async function handle (req: any, res: any){
                 data: {
                     offerList,
                     orderList,
-                    chainHeader,
+                    chainHeader: getChainHeader()
                 }
             })
             return
         }else if(type === 'get-endpoint-list' ){
-
-            const myEndpointListSet = new Set(endpointList)
-
-            console.log('endpoint-list',body.data)
-
-            for(const element of body.data){
-                
-                if(!myEndpointListSet.has(element)){
-                    endpointList.push(element)
-                }
-            }
             
             res.json({
                 type: 'new-endpoint-list',
-                data: Array.from(endpointList)
+                data: Array.from(getChainHeader().endpointList)
             })
             return
         }else if(type === 'get-pending-datas' ){
             
-            const myPendingDatasSet = new Set(pendingDatas)
-
-            for(const element of body.data){
-                
-                if(!myPendingDatasSet.has(element)){
-                    pendingDatas.push(element)
-                }
-            }
-            
             res.json({
                 type: 'new-pending-datas',
-                data: pendingDatas
+                data: getChainHeader().pendingDatas
             })
             return
         }else if(type === 'get-chain' ){
 
-            const clientChain = body.data
+            res.json({
+                type: 'new-chain',
+                data: triade.chain
+            })
+            return
 
-            if(clientChain.length>chain.length &&
-                chain[0].hash === clientChain[0].hash &&
-                chain[chain.length-1].hash === clientChain[chain.length-1].hash){
-
-                for(let i = chain.length; i < clientChain.length; i++){
-                    const block = clientChain[i]
-                    if(block.previousHash === chain[chain.length -1].hash && block.hash === SHA256(block.timestamp + block.previousHash + JSON.stringify(block.data) + block.nonce).toString()){
-                        chain.push(block)
-                    }
-                    addBlock(block)
-                }
-
-                res.json({
-                    type: 'new-chain',
-                    data: chain
-                })
-                return
-            }else{
-                res.json({
-                    type: 'new-chain',
-                    data: chain
-                })
-                return
-            }
-        }else if(type === 'get-new-chain' ){
-
-            const clientChainHeader = body.data
-
-            if (clientChainHeader.chainLength < chain.length &&
-            chain[0].hash === clientChainHeader.genesisHash &&
-            chain[chain.length-1].hash === clientChainHeader.lastHash){
-
-                const restant = []
-
-                for(let i = clientChainHeader.chainLength -1 ; i<chain.length; i++){
-                    const block = chain[i]
-                    restant.push(block)
-                }
-                
-                res.json({
-                    type: 'new-chain',
-                    data: restant
-                })
-                return
-            }else{
-                res.json({
-                    type: 'new-chain',
-                    data: chain
-                })
-                return
-            }
         }else if(type === 'get-chain-header' ){
 
-            console.log('\n\nchain header', body.data,'\n')
-
-            if(body.data.genesisHash === chainHeader.genesisHash){
+            if(body.data.genesisHash === getChainHeader().genesisHash){
                 res.json({
                     type: 'new-chain-header',
                     data: getChainHeader()
@@ -307,46 +151,27 @@ export default async function handle (req: any, res: any){
                 })          
             }
 
-        }else if(type === 'new-endpoint' ){
-
-            const set = new Set(endpointList)
-
-            if(!set.has(body.data)){
-                
-                endpointList.push(body.data)
-                
-                res.json({
-                    type: 'new-endpoint-list',
-                    data: endpointList
-                })
-                return
-            }
-            
-            res.json({
-                type: 'new-endpoint-list',
-                data: endpointList
-            })
-            return
-
         }else if(type === 'new-block' ){
 
-            const block = body.data
+            const clientBlock = body.data
+
+            const block = new Block(clientBlock.timestamp, clientBlock.contracts, clientBlock.previousHash, clientBlock.nonce, clientBlock.hash)
             
             console.log("New Block", block)
             console.log("New Hash", block.hash)
             console.log("New Previous Hash", block.previousHash)
 
-            if(block.previousHash === chain[chain.length -1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
-                addBlock(block)
+            if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
+                triade.chain.push(block)
                 res.json({
                     type: 'new-chain',
-                    data: chain
+                    data: triade.chain
                 })
                 return
             } else {
                 res.json({
                     type: 'new-chain',
-                    data: chain
+                    data: triade.chain
                 })
                 return
             }
@@ -356,6 +181,7 @@ export default async function handle (req: any, res: any){
     }else if(method === 'GET'){
         res.json({
             type: "new-chain-header",
-            data: chainHeader})
+            data: getChainHeader()
+        })
     }
 }

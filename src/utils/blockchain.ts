@@ -1,0 +1,265 @@
+
+import { SHA256 } from 'crypto-js'
+const EC = require('elliptic').ec
+const ec = new EC('secp256k1')
+
+
+export class Block {
+
+    timestamp: string;    
+    contracts: any;    
+    previousHash: string;    
+    nonce: number;    
+    hash: string;        
+
+    constructor(timestamp: string, contracts: any, previousHash: string = '', nonce: number = 0, hash: string) {
+        this.timestamp = timestamp;
+        this.contracts = contracts;
+        this.previousHash = previousHash;
+        this.nonce = nonce;
+        this.hash = hash;
+    }
+
+    hasValidContracts(): boolean {
+        for (const tx of this.contracts) {
+            if (!tx.isValid()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    checkConcense(target: number): void {
+        while (this.hash.substring(0, target) !== Array(target + 1).join("0")) {
+            this.nonce++;
+            this.hash = this.calculateHash();
+        }
+        
+    }
+
+    calculateHash() {
+        return SHA256(this.timestamp+this.previousHash+JSON.stringify(this.contracts)+this.nonce).toString()
+    }
+
+}
+
+export class BlockChain {
+
+    chain: Array<any>;
+    target: number;
+    pendingContracts: Array<any>;
+    fee: number;
+    nodes: Array<any>;
+
+    constructor(
+    ) {
+        this.chain = [this.createGenesisBlock()];
+        this.target = this.getDifficulty();
+        this.pendingContracts = [];
+        this.fee = 50;
+        this.nodes = ["https://triade-api.vercel.app/api/chain"];
+    }
+
+    getDifficulty(): number {
+        let current_difficulty: number = 2;
+        
+        /* if (this.chain.length > 2015) {
+            const latest_block = this.getLatestBlock();
+            const twoweeks = 1209600;
+            const period = (latest_block.timestamp - under2016_block.timestamp);
+            const calc = period%twoweeks;
+            const under2016_block = this.chain[this.chain.length - 2016];
+
+            
+            if(calc == 0){
+                const ttltime = (latest_block.timestamp - under2016_block.timestamp);
+
+                console.log(`bloco: ${this.chain.length-1}`)
+            }
+        } */
+        return current_difficulty;
+    }
+    addContract(contract: any) {
+        if (!contract.fromAddress || !contract.toAddress) {
+            throw new Error('Contract must include from and to address');
+        }
+        if (contract.isValid()) {
+            console.log(`
+    _____________________________________
+    |       transactionsisvalid?:       |
+     |       ${contract.isValid()}                        |
+       |___________________________________|
+            
+            `)
+        }
+        if (!contract.isValid()) {
+            throw new Error('Cannot add invalid contract to the chain');
+        }
+        this.pendingContracts.push(contract);
+    }
+
+    getLatestBlock() {
+        return this.chain[this.chain.length - 1];
+    }
+    
+    upgradeChain(newChain: Array<any>): void {
+
+        if(this.chain[0].hash === newChain[0].hash){
+
+            const myChainLength = this.chain.length
+            const newChainLength = newChain.length
+
+            for (let i = myChainLength ; i < newChainLength ; i++) {
+                const myBlock = this.chain[i-1]
+                const newBlock = newChain[i]
+                if(newBlock.previousHash === myBlock.hash){
+                    this.chain.push(newBlock)
+    
+                }
+    
+            }
+        }
+
+    }
+
+    getBalanceOfAddress(address: string) {
+        let balance: number = 0;
+        for (const block of this.chain) {
+            for (const contract of block.transactions) {
+                if (contract.fromAddress === address) {
+                    balance -= contract.amount;
+                }
+                if (contract.toAddress === address) {
+                    balance += contract.amount;
+                }
+            }
+        }
+        return balance
+    }
+
+    isChainValid() {
+        for (let i = 1; i < this.chain.length; i++) {
+            const currentBlock = this.chain[i];
+            const previousBlock = this.chain[i - 1];
+            
+            if (!currentBlock.hasValidContracts()) {
+                return false;
+            }
+            if (currentBlock.hash !== currentBlock.calculateHash()) {
+                console.error("hash not equal: " + JSON.stringify(currentBlock));
+                return false;
+            }
+            if (currentBlock.previousHash !== previousBlock.calculateHash()) {
+                console.error("previous hash not right: " + JSON.stringify(currentBlock));
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    createGenesisBlock() {
+        const newBlock: any = {
+            timestamp: "2022-08-27 00:00:00",
+            previousHash: "",
+            contracts: ["TRÍADE-Blockchain"],
+            nonce: 0
+        }
+        newBlock.hash=SHA256(newBlock.timestamp + newBlock.previousHash + JSON.stringify(newBlock.contracts) + newBlock.nonce).toString()
+        return new Block(newBlock.timestamp, newBlock.contracts, undefined, newBlock.nonce, newBlock.hash);
+    }
+
+}
+
+export class Contract {
+
+    fromAddress: string;
+    toAddress: string;
+    amount: number;
+    privateSign: any;
+    signature: string;
+
+
+    constructor(fromAddress: string, toAddress: string, amount: number) {
+
+        this.fromAddress = fromAddress;
+        this.toAddress = toAddress;
+        this.amount = amount;
+        this.signature = "";
+
+    }
+
+    calculateHash(): string {
+        return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
+    }
+
+    signContract(signingKey: string): void {
+
+        const privateSign = ec.keyFromPrivate(signingKey)
+
+        if (privateSign.getPublic('hex') !== this.fromAddress) {
+            throw new Error('You cannot sign transactions for other wallets!')
+        }
+
+        const contractHash = this.calculateHash()
+        const sig = privateSign.sign(contractHash, 'base64')
+        this.signature = sig.toDER('hex')
+        console.log(`Assinatura no formato DER: ${this.signature}`)
+    }
+
+    isValid(): boolean {
+        if (!this.fromAddress === null) return true
+
+        if (!this.signature || this.signature.length === 0) {
+            throw new Error('No signature in this transaction')
+        }
+
+        const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
+        return publicKey.verify(this.calculateHash(), this.signature)
+    }
+    
+
+}
+
+// const constract = new Contract()
+
+/* const block = new Block(new Date().getTime(), pendingDatas, chain[chain.length - 1].hash)
+
+block.mineBlock(chainHeader.target)
+
+const alicePrivateKey = '815eeac8fcb9aee5d097ad6cedc3d2310c1c258d67b50bda9377c1badddd33bc'
+const alicePublicKey = '04a9d3154a24b2aebb23f30f920ded627e131e0a3eb2624c4506842f6299ed1b29a51bd772ca0208c638c37224409e9d51b476989995482ec0f5fc4a93d3c034e0'
+
+
+console.log(block)
+ */
+
+/* 
+// wallet:
+const myPrivateKey = '1c258d67b50bda9377c1badddd33bc815eeac8fcb9aee5d097ad6cedc3d2310c';
+const myPublicKey = ec.keyFromPrivate(myPrivateKey);
+const myWalletAddress = myPublicKey.getPublic('hex');
+const alicePrivateKey = '815eeac8fcb9aee5d097ad6cedc3d2310c1c258d67b50bda9377c1badddd33bc'
+const alicePublicKey = '04a9d3154a24b2aebb23f30f920ded627e131e0a3eb2624c4506842f6299ed1b29a51bd772ca0208c638c37224409e9d51b476989995482ec0f5fc4a93d3c034e0'
+const triade = new BlockChain();
+const tx1 = new Transaction(myWalletAddress, alicePublicKey, 60);
+tx1.signTransaction(myPrivateKey);
+triade.addTransaction(tx1);
+
+// Tunelling transactions and asingnment to full nodes
+triade.minePendingTransactions(myWalletAddress);
+console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
+const tx2 = new Transaction(alicePublicKey, myWalletAddress, 20);
+tx2.signTransaction(alicePrivateKey);
+triade.minePendingTransactions(myWalletAddress);
+console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
+const tx3 = new Transaction(myWalletAddress, alicePublicKey, 60);
+tx3.signTransaction(myPrivateKey);
+triade.addTransaction(tx3);
+triade.minePendingTransactions(myWalletAddress);
+console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
+const tx4 = new Transaction(alicePublicKey, myWalletAddress, 20);
+tx4.signTransaction(alicePrivateKey);
+triade.addTransaction(tx4);
+triade.minePendingTransactions(myWalletAddress);
+console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey)); */
+
