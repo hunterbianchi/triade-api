@@ -129,6 +129,13 @@ export default async function handle (req: any, res: any){
                 data: getChainHeader().pendingDatas
             })
             return
+        }else if(type === 'new-business' ){
+            
+            res.json({
+                type: 'new-business',
+                data: `Hello`
+            })
+            return
         }else if(type === 'get-chain' ){
 
             res.json({
