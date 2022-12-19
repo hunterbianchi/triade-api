@@ -4,6 +4,7 @@ import { SHA256 } from 'crypto-js'
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 import { BlockChain, Block, Contract } from '../../utils/blockchain'
+import { getUpcodeFromJson } from '../../utils/opCode'
 
 const triade = new BlockChain()
 
@@ -131,9 +132,18 @@ export default async function handle (req: any, res: any){
             return
         }else if(type === 'new-business' ){
             
+            const owner = body.data.header.owner
+            const signature = body.data.header.signature
+            const payload = body.data.header.payload
+
+            const sla = {
+                opCode: getUpcodeFromJson(body.data)
+            }
+            
+
             res.json({
                 type: 'new-business',
-                data: `Hello`
+                data: sla
             })
             return
         }else if(type === 'get-chain' ){
