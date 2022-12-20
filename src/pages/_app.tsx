@@ -1,8 +1,8 @@
-
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { parseCookies } from 'nookies'
 import GlobalStyles from '../styles/global'
+import Room from './Room'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -20,7 +20,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
     </Head>
     <GlobalStyles />
-    <Component {...pageProps} />
+    {true && <Component {...pageProps} />}
+    {false && <Room />}
     </>
   )
 }

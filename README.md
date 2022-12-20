@@ -1,34 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TRÍADE-API
 
-## Getting Started
+## The interface between all application's datas and all peer nodes.
+___
 
-First, run the development server:
+TRÍADE-API is 1 of 3 TRÍADE-Interfaces (TRÍADE-API, TRÍADE-CLI, TRÍADE-GUI)
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+| TRÍADE-Services: | TRÍADE-API | TRÍADE-CLI | TRÍADE-GUI | LINK: |
+| :--- | :---: | :---: | :---: | :---: |
+| TRÍADE-BLOCKCHAIN | true | true | true | [Node link]("https://triade-api.vercel.app/") |
+| TRÍADE-GROUP | true | false | true | [Node link]("https://triade-group.vercel.app/") |
+| TRÍADE-DEVELOPERS | true | false | true | [Node link]("https://triade-group.vercel.app/") |
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+___
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## TRÍADE-DEVELOPERS
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+<div>
+    <img alt="Developers map" src="./src/images/web3-developers.png" width=60%/><br/>
+</div>
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+___
 
-## Learn More
+## [TRÍADE BLOCKCHAIN]("https://triade-api.vercel.app/api/chain/download")
 
-To learn more about Next.js, take a look at the following resources:
+| ACTOR: |
+| :---: |
+| User |
+| Fullnode |
+| Miner |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<div>
+    <img alt="triade blockchain map" src="./src/images/developer-blockchain.png" width=60%/><br/>
+</div>
 
-## Deploy on Vercel
+___
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## [TRÍADE GROUP]("https://triade-group.vercel.app/")
+
+| Official: |
+| :---: |
+| TRÍADE-Social |
+| TRÍADE-Commercial |
+| TRÍADE-Financial |
+
+
+<div>
+    <img alt="triade group map" src="./src/images/blockchain-triade-group.png" width=60%/><br/>
+</div>
+
+___
+
+
+## Genesis Momentum
+
+The Genesis Momentum is a snap moment in time when Blockchains Borns. There is a Genesis Block that have no Previous Hash, a Genesis Timestamp when there is nothing before, a Genesis Peer whitch is the first peer that spread every content and endpoints to new peers, and a Genesis Actor who mines the first Block, win the firsts Tokens and do the first Contract.
+
+___
+
+- ### [Genesis Block]("https://triade-api.vercel.app/api/chain/block/1")
+
+
+The Genesis Block has made at 2022-08-27T00:00:00.000Z ([Genesis Timestamp]("https://triade-api.vercel.app/api/chain/block/1"):"1661558400000"), spreat by the [Gennesis Peer]("https://triade-api.vercel.app/api/chain"). 
+
+___
+
+- ### [Genesis Peer]("https://triade-api.vercel.app/api/chain/endpoint")
+
+The Genesis Peer has been ["https://triade-api.vercel.app/api/chain/endpoint-list"]("https://triade-api.vercel.app/api/chain/endpoint-list"). Here You may post your endpoint and become a Peer, or get an enpoint to connect to a Peer.
+
+___
+

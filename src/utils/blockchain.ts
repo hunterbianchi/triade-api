@@ -157,9 +157,11 @@ export class BlockChain {
 
     }
 
+    // 2022-12-19T21:12:48.585Z
+
     createGenesisBlock() {
         const newBlock: any = {
-            timestamp: "2022-08-27 00:00:00",
+            timestamp: new Date('2022-08-27T00:00:00.000Z').getTime(),
             previousHash: "",
             contracts: ["TRÍADE-Blockchain"],
             nonce: 0
