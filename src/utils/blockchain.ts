@@ -21,14 +21,15 @@ export class Block {
     }
 
     hasValidContracts(): boolean {
-        for (const tx of this.contracts) {
-            if (!tx.isValid()) {
+        for (const contract of this.contracts) {
+            if (!contract.isValid()) {
                 return false;
             }
         }
         return true;
     }
-    checkConcense(target: number): void {
+
+    checkConsensus(target: number): void {
         while (this.hash.substring(0, target) !== Array(target + 1).join("0")) {
             this.nonce++;
             this.hash = this.calculateHash();
@@ -60,7 +61,7 @@ export class BlockChain {
     }
 
     getDifficulty(): number {
-        let current_difficulty: number = 2;
+        let currentDifficulty: number = 2;
         
         /* if (this.chain.length > 2015) {
             const latest_block = this.getLatestBlock();
@@ -76,25 +77,30 @@ export class BlockChain {
                 console.log(`bloco: ${this.chain.length-1}`)
             }
         } */
-        return current_difficulty;
+        return currentDifficulty;
     }
+
     addContract(contract: any) {
-        if (!contract.fromAddress || !contract.toAddress) {
-            throw new Error('Contract must include from and to address');
+        if (!contract.fromAddress ) {
+            throw new Error('Contract must include From and To address')
         }
-        if (contract.isValid()) {
-            console.log(`
-    _____________________________________
-    |       transactionsisvalid?:       |
-     |       ${contract.isValid()}                        |
-       |___________________________________|
+
+        if (this.getBalanceOfAddress(contract.fromAddress) >= contract.amount) {
             
-            `)
-        }
-        if (!contract.isValid()) {
-            throw new Error('Cannot add invalid contract to the chain');
-        }
-        this.pendingContracts.push(contract);
+            if (contract.isValid()) {
+                console.log(`
+        _____________________________________
+        |       transactionsisvalid?:       |
+         |       ${contract.isValid()}                        |
+           |___________________________________|
+                
+                `)
+            }
+            if (!contract.isValid()) {
+                throw new Error('Cannot add invalid contract to the chain');
+            }
+            this.pendingContracts.push(contract);
+        } else {throw new Error('No founds')}
     }
 
     getLatestBlock() {
@@ -124,7 +130,7 @@ export class BlockChain {
     getBalanceOfAddress(address: string) {
         let balance: number = 0;
         for (const block of this.chain) {
-            for (const contract of block.transactions) {
+            for (const contract of block.contracts) {
                 if (contract.fromAddress === address) {
                     balance -= contract.amount;
                 }
@@ -174,39 +180,30 @@ export class BlockChain {
 
 export class Contract {
 
-    fromAddress: string;
+    fromAddress: string | null;
     toAddress: string;
     amount: number;
-    privateSign: any;
+    opCode: string | null;
     signature: string;
 
 
-    constructor(fromAddress: string, toAddress: string, amount: number) {
+    constructor( fromAddress: string, toAddress: string , amount: number, opCode: string = '', signature: string) {
 
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.amount = amount;
-        this.signature = "";
+        this.opCode = opCode;
+        this.signature = signature;
 
     }
 
     calculateHash(): string {
-        return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
-    }
-
-    signContract(signingKey: string): void {
-
-        const privateSign = ec.keyFromPrivate(signingKey)
-
-        if (privateSign.getPublic('hex') !== this.fromAddress) {
-            throw new Error('You cannot sign transactions for other wallets!')
+        if(this.opCode){
+            return SHA256(this.opCode).toString()
         }
-
-        const contractHash = this.calculateHash()
-        const sig = privateSign.sign(contractHash, 'base64')
-        this.signature = sig.toDER('hex')
-        console.log(`Assinatura no formato DER: ${this.signature}`)
+        return SHA256(this.fromAddress + this.toAddress + this.amount).toString()
     }
+
 
     isValid(): boolean {
         if (!this.fromAddress === null) return true
@@ -215,11 +212,9 @@ export class Contract {
             throw new Error('No signature in this transaction')
         }
 
-        const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
-        return publicKey.verify(this.calculateHash(), this.signature)
+        const key = ec.keyFromPublic(this.fromAddress, 'hex')
+        return key.verify(this.calculateHash(), this.signature)
     }
-    
-
 }
 
 // const constract = new Contract()

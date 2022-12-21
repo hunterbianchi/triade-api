@@ -1,10 +1,12 @@
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+
 import fs from 'fs'
 import { SHA256 } from 'crypto-js'
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 import { BlockChain, Block, Contract } from '../../utils/blockchain'
 import { getUpcodeFromJson } from '../../utils/opCode'
+import { getKeyPair, signHash, verifySignature } from '../../utils/wallet'
 
 const triade = new BlockChain()
 
@@ -132,27 +134,95 @@ export default async function handle (req: any, res: any){
             return
         }else if(type === 'new-business' ){
 
-            // curl -X POST -d '{"type":"new-business","data":{"header":{"owner":"rewon","signature":"rignatuse"},"payload":"laypoad"}}' -H 'Content-Type':'application/json' localhost:3000/api/chain
-
+            // curl -X POST -d '{"type":"new-business","data":{"header":{"owner":"04817b5ba328e3e2c7d50c4726572b0fd8a518f08cae361d05f07e83d4b584eb10ecd010be823eab085daed129f4aab02800ba85e377a2d6ab753bc4e1ff3652cb","toAddress":"","amount":0.0007,"signature":"3045022100f237d0f68ace2895e5c382d3141c24045876ad433c1d95d7c8695a5e832643e202204312c00c9ad641bf7df9726ffedf3883c7f01cc690ea8b75c6cbc34876243988"},"payload":{"hash":"efc9e923fc16cda2446214dc00fda19093e11913a2ec49aef92f56dad6c81396","data":"TRÍADE"}}}' -H 'Content-Type':'application/json' localhost:3000/api/chain
             
-            const owner = body.data.header.owner
-            const signature = body.data.header.signature
+            const header = body.data.header
+            const owner = header.owner
+            const toAddress = header.toAddress
+            const amount = header.amount
+            const signature = header.signature
+
             const payload = body.data.payload
-            const sla = {
-                header:{
-                    owner,
-                    signature
-                },
-                payload
-            }
+            
+            const data = payload.data
+
+            const hash = payload.hash
+
+            const newHash = SHA256(data).toString()
+
+            console.log(`
+
+
+header: ${header}
+owner: ${owner}
+toAddress: ${toAddress}
+amount: ${amount}
+signature: ${signature}
+payload: ${payload}
+data: ${data}
+hash: ${hash}
+newHash: ${newHash}
+
+
+            `)
             
 
-            res.json({
-                type: 'new-business',
-                data: sla
-            })
+            if(hash !== newHash){
+                return res.json({
+                    type: 'error',
+                    message: `Wrong Hash in Payload "${hash}"`
+                })
+            }else if(signature){
+                if(owner){
+                    if (verifySignature(owner, hash, signature)) {
 
-            return
+                        
+                        const contract = new Contract(owner, '', amount, data, signature)
+                        
+                        console.log(contract.fromAddress)
+                        console.log(contract.toAddress)
+
+                        console.log(contract.isValid())
+                        
+                        try {
+                            
+                            triade.addContract(contract)
+                            
+                            console.log(triade.pendingContracts)
+
+                            return res.json({
+                                type: 'new-business',
+                                data: hash
+                            })
+
+                        } catch (error: any) {
+
+                            return res.json({
+                                type: 'error',
+                                message: error.message
+                            })
+
+                        }
+                        
+                    } else{
+                        return res.json({
+                            type: 'error',
+                            message: 'Signature undefined '
+                        })
+                    }
+                    
+                }else{
+                    return res.json({
+                        type: 'error',
+                        message: 'Owner undefined '
+                    })
+                }
+            }else{
+                return res.json({
+                    type: 'error',
+                    message: 'Signature undefined '
+                })
+            }
 
         }else if(type === 'get-chain' ){
 
