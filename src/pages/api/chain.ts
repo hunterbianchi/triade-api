@@ -131,13 +131,19 @@ export default async function handle (req: any, res: any){
             })
             return
         }else if(type === 'new-business' ){
+
+            // curl -X POST -d '{"type":"new-business","data":{"header":{"owner":"rewon","signature":"rignatuse"},"payload":"laypoad"}}' -H 'Content-Type':'application/json' localhost:3000/api/chain
+
             
             const owner = body.data.header.owner
             const signature = body.data.header.signature
-            const payload = body.data.header.payload
-
+            const payload = body.data.payload
             const sla = {
-                opCode: getUpcodeFromJson(body.data)
+                header:{
+                    owner,
+                    signature
+                },
+                payload
             }
             
 
@@ -145,7 +151,9 @@ export default async function handle (req: any, res: any){
                 type: 'new-business',
                 data: sla
             })
+
             return
+
         }else if(type === 'get-chain' ){
 
             res.json({

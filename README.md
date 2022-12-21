@@ -11,17 +11,53 @@ TRÍADE-API is 1 of 3 TRÍADE-Interfaces (TRÍADE-API, TRÍADE-CLI, TRÍADE-GUI)
 | TRÍADE-GROUP | true | false | true | [Node link]("https://triade-group.vercel.app/") |
 | TRÍADE-DEVELOPERS | true | false | true | [Node link]("https://triade-group.vercel.app/") |
 
+
 ___
 
-## TRÍADE-DEVELOPERS
 
 <div>
-    <img alt="Developers map" src="./src/images/web3-developers.png" width=60%/><br/>
+    <div style="display: flex; background: #000">
+        <div>
+            <strong style="display: flex ; justify-content: center">
+                Tríade Developers
+            </strong>
+            <img alt="Developers map" src="./src/images/web3-developers.png" width=90%/><br/>
+        </div>
+        <div>
+            <strong style="display: flex ; justify-content: center" >
+                Tríade Blockchain
+            </strong>
+            <img alt="Blockchain map" src="./src/images/developer-blockchain.png" width=90%/><br/>
+        </div>
+        <div>
+            <strong style="display: flex ; justify-content: center" >
+                Tríade Group
+            </strong>
+            <img alt="TRÍADE-GROUP map" src="./src/images/blockchain-triade-group.png" width=90%/><br/>
+        </div>
+    </div>
+</div>
+
+
+___
+
+## [TRÍADE-DEVELOPERS]("https://triade-developers.vercel.app/")
+
+| DEVELOPMENT: |
+| :---: |
+| Hunter-Bianchi |
+| TRÍADE-Core |
+| TRÍADE-Platform |
+
+ <div style="display: flex; aling-items: center; background: #000">
+    <div>
+        <img alt="Developers map" src="./src/images/web3-developers.png" width=100%/><br/>
+    </div>
 </div>
 
 ___
 
-## [TRÍADE BLOCKCHAIN]("https://triade-api.vercel.app/api/chain/download")
+## [TRÍADE BLOCKCHAIN]("https://triade-api.vercel.app/")
 
 | ACTOR: |
 | :---: |
@@ -31,7 +67,7 @@ ___
 
 
 <div>
-    <img alt="triade blockchain map" src="./src/images/developer-blockchain.png" width=60%/><br/>
+    <img alt="triade blockchain map" src="./src/images/developer-blockchain.png" width=100%/><br/>
 </div>
 
 ___
@@ -47,7 +83,7 @@ ___
 
 
 <div>
-    <img alt="triade group map" src="./src/images/blockchain-triade-group.png" width=60%/><br/>
+    <img alt="triade group map" src="./src/images/blockchain-triade-group.png" width=100%/><br/>
 </div>
 
 ___
