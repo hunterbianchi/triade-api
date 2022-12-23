@@ -3,11 +3,21 @@ import { SHA256 } from 'crypto-js'
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
 
+type BusinessAddressType = {
+    country: string;
+    state: string;
+    city: string;
+    neighbourhood: string;
+    street: string;
+    zipCode: string;
+    number: string; 
+}
+
 type ObjectType = {
     owner: string;
     businessWallet: string;
     businessName: string;
-    businessAddress?: any | null;
+    businessAddress?: BusinessAddressType | null;
 }
 
 export function opCodeToObject(opCode: string){

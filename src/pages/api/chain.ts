@@ -146,11 +146,11 @@ export default async function handle (req: any, res: any){
             
             const opCode = payload.opCode
 
-            opCodeToObject(opCode)
+            const business = opCodeToObject(opCode)
 
             const hash = payload.hash
 
-            const newHash = SHA256(opCode).toString()
+            const newHash = SHA256(`${business?.owner}${business?.businessWallet}${business?.businessName}${business?.businessAddress?.country}${business?.businessAddress?.state}${business?.businessAddress?.city}${business?.businessAddress?.neighbourhood}${business?.businessAddress?.street}${business?.businessAddress?.zipCode}${business?.businessAddress?.number}`).toString()
 
             console.log(`header: ${header}`)
             console.log(`owner: ${owner}`)
