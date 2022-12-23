@@ -5,8 +5,8 @@ import { SHA256 } from 'crypto-js'
 
 
 import { BlockChain, Block, Contract } from '../../utils/blockchain'
-import { getUpcodeFromJson } from '../../utils/opCode'
 import { getKeyPair, signHash, verifySignature } from '../../utils/wallet'
+import { opCodeToObject } from '../../utils/opCode'
 
 const triade = new BlockChain()
 
@@ -144,27 +144,23 @@ export default async function handle (req: any, res: any){
 
             const payload = body.data.payload
             
-            const data = payload.data
+            const opCode = payload.opCode
+
+            opCodeToObject(opCode)
 
             const hash = payload.hash
 
-            const newHash = SHA256(data).toString()
+            const newHash = SHA256(opCode).toString()
 
-            console.log(`
-
-
-header: ${header}
-owner: ${owner}
-toAddress: ${toAddress}
-amount: ${amount}
-signature: ${signature}
-payload: ${payload}
-data: ${data}
-hash: ${hash}
-newHash: ${newHash}
-
-
-            `)
+            console.log(`header: ${header}`)
+            console.log(`owner: ${owner}`)
+            console.log(`toAddress: ${toAddress}`)
+            console.log(`amount: ${amount}`)
+            console.log(`signature: ${signature}`)
+            console.log(`payload: ${payload}`)
+            console.log(`data: ${opCode}`)
+            console.log(`hash: ${hash}`)
+            console.log(`newHash: ${newHash}`)
             
 
             if(hash !== newHash){
@@ -175,9 +171,8 @@ newHash: ${newHash}
             }else if(signature){
                 if(owner){
                     if (verifySignature(owner, hash, signature)) {
-
                         
-                        const contract = new Contract(owner, '', amount, data, signature)
+                        const contract = new Contract(owner, '', amount, opCode, signature)
                         
                         console.log(contract.fromAddress)
                         console.log(contract.toAddress)
@@ -187,8 +182,6 @@ newHash: ${newHash}
                         try {
                             
                             triade.addContract(contract)
-                            
-                            console.log(triade.pendingContracts)
 
                             return res.json({
                                 type: 'new-business',
