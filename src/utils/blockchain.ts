@@ -209,7 +209,7 @@ export class Contract {
         if (!this.fromAddress === null) return true
 
         if (!this.signature || this.signature.length === 0) {
-            throw new Error('No signature in this transaction')
+            throw new Error('No signature in this contract')
         }
 
         const key = ec.keyFromPublic(this.fromAddress, 'hex')

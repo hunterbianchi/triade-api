@@ -37,8 +37,7 @@ export function signHash( contractHash:string, privateKey:string ){
 export function verifySignature(publicKey:string, hash:string, signature:string){
         
         return ec.keyFromPublic(publicKey, 'hex').verify(hash, signature)
-       
-        
+
 }
 
 export function getKeyPair(){
