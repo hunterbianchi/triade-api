@@ -3,7 +3,7 @@ import { SHA256 } from 'crypto-js'
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
 
-type BusinessAddressType = {
+export type BusinessAddressType = {
     country: string;
     state: string;
     city: string;
@@ -13,7 +13,7 @@ type BusinessAddressType = {
     number: string; 
 }
 
-type ObjectType = {
+export type BusinessType = {
     owner: string;
     businessWallet: string;
     businessName: string;
@@ -43,7 +43,7 @@ export function opCodeToObject(opCode: string){
             const businessName64 = opCode.substring(369, eval(businessNameLength) + 369)
             const businessName = Buffer.from(businessName64, 'base64').toString('ascii')
 
-            const business: ObjectType = {
+            const business: BusinessType = {
                 owner,
                 businessWallet,
                 businessName,
@@ -79,7 +79,7 @@ export function opCodeToObject(opCode: string){
 }
 
 
-export function objectToOpCode(object: ObjectType, protocol: string){
+export function objectToOpCode(object: BusinessType, protocol: string){
 
     // protocol TAD-TT, TAD-TA, TAD-TD, TAD-AT, TAD-AA, TAD-AD, TAD-DT, TAD-DA, TAD-DD, 
 

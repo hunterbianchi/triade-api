@@ -134,13 +134,88 @@ export default async function handle (req: any, res: any){
             return
         }else if(type === 'new-business' ){
 
-            // curl -X POST -d '{"type":"new-business","data":{"header":{"owner":"04817b5ba328e3e2c7d50c4726572b0fd8a518f08cae361d05f07e83d4b584eb10ecd010be823eab085daed129f4aab02800ba85e377a2d6ab753bc4e1ff3652cb","toAddress":"","amount":0.0007,"signature":"3045022100f237d0f68ace2895e5c382d3141c24045876ad433c1d95d7c8695a5e832643e202204312c00c9ad641bf7df9726ffedf3883c7f01cc690ea8b75c6cbc34876243988"},"payload":{"hash":"efc9e923fc16cda2446214dc00fda19093e11913a2ec49aef92f56dad6c81396","data":"TRÍADE"}}}' -H 'Content-Type':'application/json' localhost:3000/api/chain
+            // curl http://localhost:3001/api/chain -d '{"type":"new-business","data":{"header":{"timestamp":1672647250275,"owner":"04b9b7ba66b2bfc141fc9cdf20bff80a83406a04d5b7344d60c32ecb39dd1395792c8c5783c6b9893a0f2a2f84dbb7cb3b52f4d7e27957db6bdaecde180baca7a0","toAddress":"00000000","amount":0,"hash":"53e0d6e1180b0491fe4e95e44575cbe5391ff63bbc1d0117e39e486f9f25632f"},"data":{"businessRating":5,"businessWallet":"04c69ea6f77652f436b3625f360d611f1448f38d6cd992505b41d1edefff225bc8c61de554231e7b9d828948a3bddcd8005c88af439753cb51f72688b901324fa5","businessName":"","businessService":"commerce","businessProducts":null,"businessImage":"","businessAddress":{"businessCountry":"","businessState":"","businessCity":"","businessNeighbourhood":"","businessStreet":"","businessZipCode":"","businessNumber":""},"addressHash":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","dataHash":"503eaf0171092663bbf65c2daa3c706a2bfd7e4f72bdd93bbda479cd1af039f2"}}}' -H 'Content-Type':'application/json' -X POST
+/* 
+            const token: any = {
+                header:{
+                    timestamp:new Date().getTime(),
+                    owner: getPublicKey(privateKey),
+                    toAddress: "00000000",
+                    amount,
+                    hash,
+                    signature,
+                },
+                data:{
+                    businessRating:5,
+                    businessWallet: businessPair.publicKey,
+                    businessName,
+                    businessService,
+                    businessProducts: businessService==="Commerce"?[]:null,
+                    businessImage,
+                    businessAddress,
+                    dataHash,
+                }
+            }
+*/
+
+            console.log(JSON.stringify(body.data))
+
+            const token = body.data
+            const tokenHeader = token.header
+            const tokenData = token.data
+
+            if(tokenHeader.hash === SHA256("").toString()){
+                
+            }
             
-            const header = body.data.header
-            const owner = header.owner
-            const toAddress = header.toAddress
-            const amount = header.amount
-            const signature = header.signature
+            const timestamp = token.header.timestamp
+            const owner = token.header.owner
+            const toAddress = token.header.toAddress
+            const amount = token.header.amount
+            const signature = token.header.signature
+            const hash = token.header.hash
+
+            return res.json({
+                type: 'new-business',
+                data: body.data
+            })
+        
+/* 
+{
+  "type": "new-business",
+  "data": {
+    "type": "new-business",
+    "data": {
+      "header": {
+        "timestamp": 1672647250275,
+        "owner": "04b9b7ba66b2bfc141fc9cdf20bff80a83406a04d5b7344d60c32ecb39dd1395792c8c5783c6b9893a0f2a2f84dbb7cb3b52f4d7e27957db6bdaecde180baca7a0",
+        "toAddress": "00000000",
+        "amount": 0,
+        "hash": "53e0d6e1180b0491fe4e95e44575cbe5391ff63bbc1d0117e39e486f9f25632f"
+      },
+      "data": {
+        "businessRating": 5,
+        "businessWallet": "04c69ea6f77652f436b3625f360d611f1448f38d6cd992505b41d1edefff225bc8c61de554231e7b9d828948a3bddcd8005c88af439753cb51f72688b901324fa5",
+        "businessName": "",
+        "businessService": "commerce",
+        "businessProducts": null,
+        "businessImage": "",
+        "businessAddress": {
+          "businessCountry": "",
+          "businessState": "",
+          "businessCity": "",
+          "businessNeighbourhood": "",
+          "businessStreet": "",
+          "businessZipCode": "",
+          "businessNumber": ""
+        },
+        "addressHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dataHash": "503eaf0171092663bbf65c2daa3c706a2bfd7e4f72bdd93bbda479cd1af039f2"
+      }
+    }
+  }
+}
+*/
 
             const payload = body.data.payload
             
@@ -148,19 +223,8 @@ export default async function handle (req: any, res: any){
 
             const business = opCodeToObject(opCode)
 
-            const hash = payload.hash
-
             const newHash = SHA256(`${business?.owner}${business?.businessWallet}${business?.businessName}${business?.businessAddress?.country}${business?.businessAddress?.state}${business?.businessAddress?.city}${business?.businessAddress?.neighbourhood}${business?.businessAddress?.street}${business?.businessAddress?.zipCode}${business?.businessAddress?.number}`).toString()
 
-            console.log(`header: ${header}`)
-            console.log(`owner: ${owner}`)
-            console.log(`toAddress: ${toAddress}`)
-            console.log(`amount: ${amount}`)
-            console.log(`signature: ${signature}`)
-            console.log(`payload: ${payload}`)
-            console.log(`data: ${opCode}`)
-            console.log(`hash: ${hash}`)
-            console.log(`newHash: ${newHash}`)
             
 
             if(hash !== newHash){
