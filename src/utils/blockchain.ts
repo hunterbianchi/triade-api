@@ -182,23 +182,27 @@ export class Contract {
     fromAddress: string | null;
     toAddress: string;
     amount: number;
-    opCode: string | null;
+    payload: any;
     signature: string;
 
 
-    constructor( fromAddress: string, toAddress: string , amount: number, opCode: string = '', signature: string) {
+    constructor( fromAddress: string, toAddress: string , amount: number, payload: any | undefined, signature: string) {
 
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.amount = amount;
-        this.opCode = opCode;
+        this.payload = payload;
         this.signature = signature;
-
     }
 
     calculateHash(): string {
-        if(this.opCode){
-            return SHA256(this.opCode).toString()
+        if(this.payload){
+            const newDataHash = SHA256(`${this.payload.data.businessRating}${this.payload.data.businessWallet}${this.payload.data.businessName}${this.payload.data.businessImage}${this.payload.data.businessService}${this.payload.data.businessProducts?JSON.stringify(this.payload.data.businessProducts):null}${this.payload.data.businessAddress?this.payload.data.addressHash:null}`).toString()
+            
+            if(newDataHash === this.payload.data.dataHash){
+                return SHA256(`${this.payload.header.timestamp}${this.payload.header.owner}${this.payload.header.toAddress}${this.payload.header.amount}${newDataHash}`).toString()
+            }
+            
         }
         return SHA256(this.fromAddress + this.toAddress + this.amount).toString()
     }

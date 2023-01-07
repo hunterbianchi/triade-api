@@ -1,5 +1,3 @@
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
-
 import fs from 'fs'
 import { SHA256 } from 'crypto-js'
 
@@ -134,29 +132,35 @@ export default async function handle (req: any, res: any){
             return
         }else if(type === 'new-business' ){
 
-            // curl http://localhost:3001/api/chain -d '{"type":"new-business","data":{"header":{"timestamp":1672647250275,"owner":"04b9b7ba66b2bfc141fc9cdf20bff80a83406a04d5b7344d60c32ecb39dd1395792c8c5783c6b9893a0f2a2f84dbb7cb3b52f4d7e27957db6bdaecde180baca7a0","toAddress":"00000000","amount":0,"hash":"53e0d6e1180b0491fe4e95e44575cbe5391ff63bbc1d0117e39e486f9f25632f"},"data":{"businessRating":5,"businessWallet":"04c69ea6f77652f436b3625f360d611f1448f38d6cd992505b41d1edefff225bc8c61de554231e7b9d828948a3bddcd8005c88af439753cb51f72688b901324fa5","businessName":"","businessService":"commerce","businessProducts":null,"businessImage":"","businessAddress":{"businessCountry":"","businessState":"","businessCity":"","businessNeighbourhood":"","businessStreet":"","businessZipCode":"","businessNumber":""},"addressHash":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","dataHash":"503eaf0171092663bbf65c2daa3c706a2bfd7e4f72bdd93bbda479cd1af039f2"}}}' -H 'Content-Type':'application/json' -X POST
-/* 
-            const token: any = {
-                header:{
-                    timestamp:new Date().getTime(),
-                    owner: getPublicKey(privateKey),
-                    toAddress: "00000000",
-                    amount,
-                    hash,
-                    signature,
+            // curl http://localhost:3000/api/chain -d '{"type":"new-business","data":{"header":{"timestamp":1672934475153,"owner":"04f731c8a283a95770c0541dbe9d477724ea8321153934c9734876699c23f0b3c8b4de30cb87385aa561045e30639ae5718e8cee1a7cc6499765c4135da21bcb21","toAddress":"00000000","amount":0,"hash":"f1989dd4310cb0ec724f0b883dddf7b3306ad20f5261d666854b5957d3f7fcb9","signature":"3045022018e142aba95d932b6e66535c492b835624976efe25ec6d400d739d68bd598d5d022100fb08bebda5b61e03e5963949d5c9234f1d611f4f5d71bf4b8ab9226e5208170e"},"data":{"businessRating":5,"businessWallet":"047721abc10f1bc6bc42539dc731b35159cb4c22fbc9086255e5c01cd2e46d435cd07c491bde9ad541afdc6e1fb7ccb57fef96adb410fda6ef1edf164dc4bc7036","businessName":"Anonymous","businessService":"commerce","businessProducts":[],"businessImage":"","dataHash":"7ea0fc36b8fade4fa2d1bffd66c92c80332704bc6175706f31cd1615d796d60e"}}}' -H 'Content-Type':'application/json' -X POST
+
+
+            /*
+            {
+                "header":{
+                    "timestamp": 1672934475153,
+                    "owner": "04f731c8a283a95770c0541dbe9d477724ea8321153934c9734876699c23f0b3c8b4de30cb87385aa561045e30639ae5718e8cee1a7cc6499765c4135da21bcb21",
+                    "toAddress": "00000000",
+                    "amount": 0,
+                    "hash": "f1989dd4310cb0ec724f0b883dddf7b3306ad20f5261d666854b5957d3f7fcb9",
+                    "signature": "3045022018e142aba95d932b6e66535c492b835624976efe25ec6d400d739d68bd598d5d022100fb08bebda5b61e03e5963949d5c9234f1d611f4f5d71bf4b8ab9226e5208170e"
                 },
-                data:{
-                    businessRating:5,
-                    businessWallet: businessPair.publicKey,
-                    businessName,
-                    businessService,
-                    businessProducts: businessService==="Commerce"?[]:null,
-                    businessImage,
-                    businessAddress,
-                    dataHash,
+                "data": {
+                    "businessRating":5,
+                    "businessWallet": "047721abc10f1bc6bc42539dc731b35159cb4c22fbc9086255e5c01cd2e46d435cd07c491bde9ad541afdc6e1fb7ccb57fef96adb410fda6ef1edf164dc4bc7036",
+                    "businessName": "Anonymous",
+                    "businessService": "commerce",
+                    "businessProducts": [],
+                    "businessImage": "",
+                    "dataHash": "7ea0fc36b8fade4fa2d1bffd66c92c80332704bc6175706f31cd1615d796d60e"
                 }
             }
-*/
+
+            token.data.dataHash = SHA256(`${token.data.businessRating}${token.data.businessWallet}${token.data.businessName}${token.data.businessImage}${token.data.businessService}${token.data.businessProducts?JSON.stringify(token.data.businessProducts):null}${isPhysical?token.data.addressHash:null}`).toString()
+                
+            token.header.hash = SHA256(`${token.header.timestamp}${token.header.owner}${token.header.toAddress}${token.header.amount}${token.data.dataHash}`).toString()
+
+            */
 
             console.log(JSON.stringify(body.data))
 
@@ -164,120 +168,87 @@ export default async function handle (req: any, res: any){
             const tokenHeader = token.header
             const tokenData = token.data
 
-            if(tokenHeader.hash === SHA256("").toString()){
+            const timestamp = tokenHeader.timestamp
+            const owner = tokenHeader.owner
+            const toAddress = tokenHeader.toAddress
+            const amount = tokenHeader.amount
+            const signature = tokenHeader.signature
+            const hash = tokenHeader.hash
+
+            const newDataHash = SHA256(`${tokenData.businessRating}${tokenData.businessWallet}${tokenData.businessName}${tokenData.businessImage}${tokenData.businessService}${tokenData.businessProducts?JSON.stringify(tokenData.businessProducts):null}${tokenData.businessAddress?tokenData.addressHash:null}`).toString()
+            
+            const newHash = SHA256(`${tokenHeader.timestamp}${tokenHeader.owner}${tokenHeader.toAddress}${tokenHeader.amount}${tokenData.dataHash}`).toString()
+            
+            console.log(`\n\nData hash: ${newDataHash}\n`)
+            console.log(`Hash: ${newHash}\n`)
+            console.log(`Signature: ${signature}\n`)
+            console.log(`Balance: ${triade.getBalanceOfAddress(owner)}\n`)
+
+            if(tokenData.dataHash === newDataHash){
+                console.log("Hash matches")
                 
-            }
-            
-            const timestamp = token.header.timestamp
-            const owner = token.header.owner
-            const toAddress = token.header.toAddress
-            const amount = token.header.amount
-            const signature = token.header.signature
-            const hash = token.header.hash
-
-            return res.json({
-                type: 'new-business',
-                data: body.data
-            })
-        
-/* 
-{
-  "type": "new-business",
-  "data": {
-    "type": "new-business",
-    "data": {
-      "header": {
-        "timestamp": 1672647250275,
-        "owner": "04b9b7ba66b2bfc141fc9cdf20bff80a83406a04d5b7344d60c32ecb39dd1395792c8c5783c6b9893a0f2a2f84dbb7cb3b52f4d7e27957db6bdaecde180baca7a0",
-        "toAddress": "00000000",
-        "amount": 0,
-        "hash": "53e0d6e1180b0491fe4e95e44575cbe5391ff63bbc1d0117e39e486f9f25632f"
-      },
-      "data": {
-        "businessRating": 5,
-        "businessWallet": "04c69ea6f77652f436b3625f360d611f1448f38d6cd992505b41d1edefff225bc8c61de554231e7b9d828948a3bddcd8005c88af439753cb51f72688b901324fa5",
-        "businessName": "",
-        "businessService": "commerce",
-        "businessProducts": null,
-        "businessImage": "",
-        "businessAddress": {
-          "businessCountry": "",
-          "businessState": "",
-          "businessCity": "",
-          "businessNeighbourhood": "",
-          "businessStreet": "",
-          "businessZipCode": "",
-          "businessNumber": ""
-        },
-        "addressHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "dataHash": "503eaf0171092663bbf65c2daa3c706a2bfd7e4f72bdd93bbda479cd1af039f2"
-      }
-    }
-  }
-}
-*/
-
-            const payload = body.data.payload
-            
-            const opCode = payload.opCode
-
-            const business = opCodeToObject(opCode)
-
-            const newHash = SHA256(`${business?.owner}${business?.businessWallet}${business?.businessName}${business?.businessAddress?.country}${business?.businessAddress?.state}${business?.businessAddress?.city}${business?.businessAddress?.neighbourhood}${business?.businessAddress?.street}${business?.businessAddress?.zipCode}${business?.businessAddress?.number}`).toString()
-
-            
-
-            if(hash !== newHash){
-                return res.json({
-                    type: 'error',
-                    message: `Wrong Hash in Payload "${hash}"`
-                })
-            }else if(signature){
-                if(owner){
-                    if (verifySignature(owner, hash, signature)) {
+                if(tokenHeader.hash === newHash){
+                    console.log("Hash matches")
+                    
+                    if(verifySignature(owner, hash, signature)){
+                        console.log("Valid Signature")
                         
-                        const contract = new Contract(owner, '', amount, opCode, signature)
-                        
-                        console.log(contract.fromAddress)
-                        console.log(contract.toAddress)
+                        if(triade.getBalanceOfAddress(owner) >= amount){
+                            if(timestamp>triade.chain[triade.chain.length-1].timestamp){
+                                const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
 
-                        console.log(contract.isValid())
-                        
-                        try {
-                            
-                            triade.addContract(contract)
+                                console.log(contract.isValid())
+                                triade.addContract(contract)
+                                console.log(triade.pendingContracts)
+                                
+                                return res.json({
+                                    type: 'new-business',
+                                    data: contract
+                                })
 
-                            return res.json({
-                                type: 'new-business',
-                                data: hash
-                            })
-
-                        } catch (error: any) {
-
+                            }else{
+                                return res.json({
+                                    type: 'error',
+                                    error: {
+                                        message: "You cannot create contracts in the past.\n\nVerify you contract's timestamp",
+                                        number: "0001"
+                                    }
+                                })
+                            }
+                        }else{
                             return res.json({
                                 type: 'error',
-                                message: error.message
+                                error: {
+                                    message: "YOU ARE A BROKE!!! Hehe...\n\nCheck your balance or buy some TADs",
+                                    number: "0001"
+                                }
                             })
-
                         }
-                        
-                    } else{
+                    }else{
                         return res.json({
                             type: 'error',
-                            message: 'Signature undefined '
+                            error: {
+                                message: "Your signature does not sign this contrat or is not your signature.",
+                                number: "0001"
+                            }
                         })
                     }
-                    
                 }else{
                     return res.json({
                         type: 'error',
-                        message: 'Owner undefined '
+                        error: {
+                            message: "Hash doesn't match",
+                            number: "0001"
+                        }
                     })
                 }
             }else{
                 return res.json({
                     type: 'error',
-                    message: 'Signature undefined '
+                    error: {
+                        message: "Data hash doesn't match",
+                        number: "0001"
+                    }
                 })
             }
 
