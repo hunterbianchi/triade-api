@@ -2,21 +2,56 @@ import { SHA256 } from 'crypto-js'
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
 
+export class EmptyBlock {
+    
+    timestamp: number
+    contracts: any
+    previousHash: string
+    nonce: number
+    hash: string
+
+    constructor(timestamp: number, contracts: any, previousHash: string = '') {
+        this.timestamp = timestamp
+        this.contracts = contracts
+        this.previousHash = previousHash
+        this.nonce = 0
+        this.hash = this.calculateHash()
+    }
+    hasValidTransactions() {
+        for (const tx of this.contracts) {
+            if (!tx.isValid()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    mineBlock(difficulty: number) {
+        while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+            this.nonce++;
+            this.hash = this.calculateHash();
+        }
+    }
+
+    calculateHash() {
+        return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.contracts) + this.nonce).toString();
+    }
+
+}
 
 export class Block {
 
-    timestamp: string;    
-    contracts: any;    
-    previousHash: string;    
-    nonce: number;    
-    hash: string;        
+    timestamp: string    
+    contracts: any    
+    previousHash: string    
+    nonce: number    
+    hash: string        
 
     constructor(timestamp: string, contracts: any, previousHash: string = '', nonce: number = 0, hash: string) {
-        this.timestamp = timestamp;
-        this.contracts = contracts;
-        this.previousHash = previousHash;
-        this.nonce = nonce;
-        this.hash = hash;
+        this.timestamp = timestamp
+        this.contracts = contracts
+        this.previousHash = previousHash
+        this.nonce = nonce
+        this.hash = hash
     }
 
     hasValidContracts(): boolean {
@@ -28,7 +63,7 @@ export class Block {
         return true;
     }
 
-    checkConsensus(target: number): void {
+    mine(target: number): void {
         while (this.hash.substring(0, target) !== Array(target + 1).join("0")) {
             this.nonce++;
             this.hash = this.calculateHash();
@@ -44,19 +79,19 @@ export class Block {
 
 export class BlockChain {
 
-    chain: Array<any>;
-    target: number;
-    pendingContracts: Array<any>;
-    fee: number;
-    nodes: Array<any>;
+    chain: Array<any>
+    target: number
+    pendingContracts: Array<any>
+    fee: number
+    nodes: Array<any>
 
     constructor(
     ) {
-        this.chain = [this.createGenesisBlock()];
-        this.target = this.getDifficulty();
-        this.pendingContracts = [];
-        this.fee = 50;
-        this.nodes = ["https://triade-api.vercel.app/api/chain"];
+        this.chain = [this.createGenesisBlock()]
+        this.target = this.getDifficulty()
+        this.pendingContracts = []
+        this.fee = 50
+        this.nodes = ["https://triade-api.vercel.app/api/chain"]
     }
 
     getDifficulty(): number {
@@ -125,6 +160,12 @@ export class BlockChain {
         }
 
     }
+    minePendingContracts(miningRewardAddress: string) {
+        let block = new EmptyBlock(Date.now(), this.pendingContracts);
+        block.mineBlock(this.target);
+        this.chain.push(block);
+        this.pendingContracts = [new Contract(null, miningRewardAddress, this.fee)];
+    }
 
     getBalanceOfAddress(address: string) {
         let balance: number = 0;
@@ -182,11 +223,11 @@ export class Contract {
     fromAddress: string | null;
     toAddress: string;
     amount: number;
-    payload: any;
-    signature: string;
+    payload?: any;
+    signature?: string;
 
 
-    constructor( fromAddress: string, toAddress: string , amount: number, payload: any | undefined, signature: string) {
+    constructor( fromAddress: string | null, toAddress: string , amount: number, payload?: any | undefined, signature?: string) {
 
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;

@@ -197,21 +197,36 @@ export default async function handle (req: any, res: any){
                             if(timestamp>triade.chain[triade.chain.length-1].timestamp){
                                 const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
 
-                                console.log(contract.isValid())
-                                triade.addContract(contract)
-                                console.log(triade.pendingContracts)
-                                
-                                return res.json({
-                                    type: 'new-business',
-                                    data: contract
-                                })
+                                if(contract.isValid()){
+
+                                    console.log(contract.isValid())
+                                    triade.addContract(contract)
+                                    "8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505"
+                                    
+                                    triade.minePendingContracts("8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505")
+                                    console.log(triade.pendingContracts)
+                                    
+                                    return res.json({
+                                        type: 'new-business',
+                                        data: contract
+                                    })
+                                }else{
+
+                                    return res.json({
+                                        type: 'error',
+                                        error: {
+                                            message: "\tContract is not valid.\nIt means that it ain't no signature, addresses or signature not related to owner's address",
+                                            code: "0001"
+                                        }
+                                    })
+                                }
 
                             }else{
                                 return res.json({
                                     type: 'error',
                                     error: {
                                         message: "You cannot create contracts in the past.\n\nVerify you contract's timestamp",
-                                        number: "0001"
+                                        code: "0001"
                                     }
                                 })
                             }
@@ -220,7 +235,7 @@ export default async function handle (req: any, res: any){
                                 type: 'error',
                                 error: {
                                     message: "YOU ARE A BROKE!!! Hehe...\n\nCheck your balance or buy some TADs",
-                                    number: "0001"
+                                    code: "0001"
                                 }
                             })
                         }
@@ -229,7 +244,7 @@ export default async function handle (req: any, res: any){
                             type: 'error',
                             error: {
                                 message: "Your signature does not sign this contrat or is not your signature.",
-                                number: "0001"
+                                code: "0001"
                             }
                         })
                     }
@@ -238,7 +253,7 @@ export default async function handle (req: any, res: any){
                         type: 'error',
                         error: {
                             message: "Hash doesn't match",
-                            number: "0001"
+                            code: "0001"
                         }
                     })
                 }
@@ -247,7 +262,7 @@ export default async function handle (req: any, res: any){
                     type: 'error',
                     error: {
                         message: "Data hash doesn't match",
-                        number: "0001"
+                        code: "0001"
                     }
                 })
             }

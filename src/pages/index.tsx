@@ -31,6 +31,42 @@ import Image from 'next/image'
 const elliptic = require("elliptic").ec
 const ec = new elliptic("secp256k1")
 
+class BlockMock {
+    
+  timestamp: number
+  contracts: any
+  previousHash: string
+  nonce: number
+  hash: string
+
+  constructor(timestamp: number, contracts: any, previousHash: string = '') {
+      this.timestamp = timestamp
+      this.contracts = contracts
+      this.previousHash = previousHash
+      this.nonce = 0
+      this.hash = this.calculateHash()
+  }
+  hasValidTransactions() {
+      for (const tx of this.contracts) {
+          if (!tx.isValid()) {
+              return false;
+          }
+      }
+      return true;
+  }
+  mineBlock(difficulty: number) {
+      while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+          this.nonce++;
+          this.hash = this.calculateHash();
+      }
+  }
+
+  calculateHash() {
+      return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.contracts) + this.nonce).toString();
+  }
+
+}
+
 export type HomeType = {
   viewMobileMode?: boolean;
   method?: string;
@@ -58,11 +94,11 @@ export default function Home(props: any) {
   // const [ offerList, setOfferList ] = useState<any>(props.offerList)
   // const [ orderList, setOrderList ] = useState<any>(props.offerList)
   
+  const [ baseURL, setBaseURL ] = useState<any>(process.env.NEXT_PUBLIC_BASE_URL)
   const [ myChainHeader, setMyChainHeader ] = useState<any>({})
   const [ myChain, setMyChain ] = useState<Array<any>>([])
   const [ openMethods, setOpenMethods ] = useState<boolean>(false)
   const [ showing, setShowing ] = useState<string>('chain')
-  const [ baseURL, setBaseURL ] = useState<any>(process.env.NEXT_PUBLIC_BASE_URL)
   const [ pendingDatas, setPendingDatas ] = useState<Array<any>>([])
   const [ endpointList, setEndpointList ] = useState<Array<any>>([])
   const [ orderList, setOrderList ] = useState<Array<any>>([])
@@ -350,7 +386,7 @@ function treatResponse(response: any){
           
         } finally{
           
-          const newBlock = createBlock()
+          const newBlock = new BlockMock(new Date().getTime(), pendingDatas, )
       
           await fetch(`${baseURL}/chain`, {
             method: 'POST',
