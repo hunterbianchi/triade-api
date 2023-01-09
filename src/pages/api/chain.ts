@@ -119,7 +119,7 @@ export default async function handle (req: any, res: any){
         }else if(type === 'get-balance'){
 
           const wallet = body.data
-          const balance = triade.getBalance(wallet)
+          const balance = triade.getBalanceOfAddress(wallet)
           return res.json({
             type: 'balance',
             data: {
