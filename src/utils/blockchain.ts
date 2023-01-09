@@ -160,6 +160,7 @@ export class BlockChain {
         }
 
     }
+    
     minePendingContracts(miningRewardAddress: string) {
         let block = new EmptyBlock(Date.now(), this.pendingContracts);
         block.mineBlock(this.target);
