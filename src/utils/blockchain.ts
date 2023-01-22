@@ -93,6 +93,28 @@ export class BlockChain {
         this.fee = 50
         this.nodes = ["https://triade-api.vercel.app/api/chain"]
     }
+  
+    updateChain(newChain: Array<any>){
+        if(newChain.length > this.chain.length){
+
+            if(newChain[0].hash === this.chain[0].hash){
+                if(newChain[this.chain.length - 1].hash === this.chain[this.chain.length - 1].hash){
+                    for(let i = this.chain.length; i === newChain.length - 1; i++){
+                        
+                        const bl = newChain[i]
+                        if (this.getLatestBlock().hash === bl.previousHash){
+                            const block = new Block(bl.timestamp, bl.contracts, bl.previousHash, bl.nonce, bl.hash)
+                            
+                            if (block.calculateHash() === bl.hash && bl.hash.substring(0, this.target) === Array(this.target + 1).join("0")){
+                                
+                                this.chain.push(block)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     getDifficulty(): number {
         let currentDifficulty: number = 2;
@@ -141,31 +163,11 @@ export class BlockChain {
         return this.chain[this.chain.length - 1];
     }
     
-    upgradeChain(newChain: Array<any>): void {
-
-        if(this.chain[0].hash === newChain[0].hash){
-
-            const myChainLength = this.chain.length
-            const newChainLength = newChain.length
-
-            for (let i = myChainLength ; i < newChainLength ; i++) {
-                const myBlock = this.chain[i-1]
-                const newBlock = newChain[i]
-                if(newBlock.previousHash === myBlock.hash){
-                    this.chain.push(newBlock)
-    
-                }
-    
-            }
-        }
-
-    }
-    
     minePendingContracts(miningRewardAddress: string) {
-        let block = new EmptyBlock(Date.now(), this.pendingContracts);
-        block.mineBlock(this.target);
-        this.chain.push(block);
-        this.pendingContracts = [new Contract(null, miningRewardAddress, this.fee)];
+        let block = new EmptyBlock(Date.now(), this.pendingContracts, this.getLatestBlock().hash)
+        block.mineBlock(this.target)
+        this.chain.push(block)
+        this.pendingContracts = [new Contract(new Date().getTime(), null, miningRewardAddress, this.fee)]
     }
 
     getBalanceOfAddress(address: string) {
@@ -185,28 +187,30 @@ export class BlockChain {
 
     isChainValid() {
         for (let i = 1; i < this.chain.length; i++) {
-            const currentBlock = this.chain[i];
-            const previousBlock = this.chain[i - 1];
-            
+            const currentBlock = this.chain[i]
+            const previousBlock = this.chain[i - 1]
+
+            if(currentBlock.previousHash !== previousBlock.hash){
+                return false
+            }            
             if (!currentBlock.hasValidContracts()) {
-                return false;
+                return false
             }
             if (currentBlock.hash !== currentBlock.calculateHash()) {
-                console.error("hash not equal: " + JSON.stringify(currentBlock));
-                return false;
+                console.error("hash not equal: " + JSON.stringify(currentBlock))
+                return false
             }
             if (currentBlock.previousHash !== previousBlock.calculateHash()) {
-                console.error("previous hash not right: " + JSON.stringify(currentBlock));
-                return false;
+                console.error("previous hash not right: " + JSON.stringify(currentBlock))
+                return false
             }
-            return true;
+            return true
         }
 
     }
-
-    // 2022-12-19T21:12:48.585Z
-
+    
     createGenesisBlock() {
+        // 2022-12-19T21:12:48.585Z
         const newBlock: any = {
             timestamp: new Date('2022-08-27T00:00:00.000Z').getTime(),
             previousHash: "",
@@ -221,6 +225,7 @@ export class BlockChain {
 
 export class Contract {
 
+    timestamp: number;
     fromAddress: string | null;
     toAddress: string;
     amount: number;
@@ -228,8 +233,9 @@ export class Contract {
     signature?: string;
 
 
-    constructor( fromAddress: string | null, toAddress: string , amount: number, payload?: any | undefined, signature?: string) {
+    constructor( timestamp: number, fromAddress: string | null, toAddress: string , amount: number, payload?: any | undefined, signature?: string) {
 
+        this.timestamp = timestamp;
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.amount = amount;
@@ -246,7 +252,7 @@ export class Contract {
             }
             
         }
-        return SHA256(this.fromAddress + this.toAddress + this.amount).toString()
+        return SHA256(`${this.timestamp}${this.fromAddress}${this.toAddress}${this.amount}`).toString()
     }
 
 
