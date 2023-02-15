@@ -257,7 +257,8 @@ export class Contract {
 
 
     isValid(): boolean {
-        if (!this.fromAddress === null) return true
+        console.log(`\n\n${(JSON.stringify(this.signature))}\n\n`)
+        if (this.fromAddress === null) return true
 
         if (!this.signature || this.signature.length === 0) {
             throw new Error('No signature in this contract')

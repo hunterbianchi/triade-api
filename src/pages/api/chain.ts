@@ -56,7 +56,6 @@ function getChainHeader(){
     return chainHeader
 }
 
-
 const observers: any = []
 
 function subscribeObserver(command:any){
@@ -178,6 +177,30 @@ export default async function handle (req: any, res: any){
 
             console.log(JSON.stringify(body.data))
 
+            /* 
+                {
+                    "header":{
+                        "status":"pending",
+                        "timestamp":1676468468698,
+                        "owner":"04a122c1b690f6d4f3d4cfdb99b7d8e878ab155147b0208946c9f7ca029a3561d5f6af3726141f463f94a52e52fa95633a37114bc6eeca28ea3e2c3afc78c2b3f3",
+                        "toAddress":"00000000",
+                        "amount":0,
+                        "hash":"037f8fe3af521ef3e73db6f0cfb0db8dbd43a32e53574de2b5fbe44d1fa82688",
+                        "signature":"3046022100c78d0fce415300c82addb1a72d8df5347867691f8789206de617893c1468fab0022100b9c7dfb1178ce0974584e6aba2ab9ad5d9d4855c11927bfb428a20ffd71d7c7f"
+                    },
+                    "data":{
+                        "businessRating":5,
+                        "businessWallet":"04eae14ab1d7c22ec612502bb6f953cdc87ea1fad8c257780700fa875149b357fc14afc7766b378b7320df8bd93bcd5bd7b2544c73755ad4f58a502a5c1ce0bda3",
+                        "businessName":"Anonymous",
+                        "businessService":"commerce",
+                        "businessProducts":["TRÍADE","Business","Products"],
+                        "businessImage":"",
+                        "dataHash":"7d2010bc778969383d7ff224a596022c8a1231fdec1b2f36a8fd8c4896cd594d"
+                    }
+                }
+
+            */
+
             const token = body.data
             const tokenHeader = token.header
             const tokenData = token.data
@@ -209,11 +232,14 @@ export default async function handle (req: any, res: any){
                         
                         if(triade.getBalanceOfAddress(owner) >= amount){
                             if(timestamp>triade.chain[triade.chain.length-1].timestamp){
-                                const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
+                                // const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
+                                const contract = new Contract(timestamp, owner, toAddress, amount, token, signature)
+
+                                console.log(`New Contract:\n${JSON.stringify(contract)}`)
 
                                 if(contract.isValid()){
 
-                                    console.log(contract.isValid())
+                                    console.log(`Is Valid?: ${(contract.isValid())}`)
                                     triade.addContract(contract)
                                     "8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505"
                                     
