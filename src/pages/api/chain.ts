@@ -82,8 +82,19 @@ export default async function handle (req: any, res: any){
     const { method } = req
     
     if (req.method === 'OPTIONS') {
+
+        const token = await fetch("https://api.vercel.com/v3/user/tokens", {
+            "headers": {
+            "Authorization": "Bearer <TOKEN>"
+        },
+        "method": "post"
+        }).then(res=>res.json()).then(res=>{
+            console.log(res)
+            return res
+        })
+
         res.status(200).end()
-        return
+        return token
     }
     
     res.setHeader('Access-Control-Allow-Origin','*')
