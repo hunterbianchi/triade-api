@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { SHA256 } from 'crypto-js'
-
+import cors from 'cors'
 
 import { BlockChain, Block, Contract } from '../../utils/blockchain'
 import { getKeyPair, signHash, verifySignature } from '../../utils/wallet'
