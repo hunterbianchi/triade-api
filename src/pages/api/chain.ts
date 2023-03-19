@@ -1,6 +1,7 @@
+import { withApiAuthRequired } from '@auth0/nextjs-auth0'
+import cors from 'cors'
 import fs from 'fs'
 import { SHA256 } from 'crypto-js'
-import cors from 'cors'
 
 import { BlockChain, Block, Contract } from '../../utils/blockchain'
 import { getKeyPair, signHash, verifySignature } from '../../utils/wallet'
@@ -69,7 +70,7 @@ function notifyObservers(command:any){
 }
 
 
-export default async function handle (req: any, res: any){
+async function handle (req: any, res: any){
 
     res.setHeader('Access-Control-Allow-Credentials', true)
     res.setHeader('Access-Control-Allow-Origin', '*, https://triade-group.vercel.app/*')
@@ -376,3 +377,7 @@ export default async function handle (req: any, res: any){
         })
     }
 }
+
+export default withApiAuthRequired(
+  cors()(handler)
+)
