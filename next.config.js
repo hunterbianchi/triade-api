@@ -9,7 +9,7 @@ module.exports = {
     return [
       {
         // matching all API routes
-        source: "/_next/:path*",
+        source: "/_next/:path*, *",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
