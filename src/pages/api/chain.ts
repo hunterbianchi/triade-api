@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import { withApiAuthRequired } from '@auth0/nextjs-auth0'
 import cors from 'cors'
 import fs from 'fs'
@@ -70,7 +71,7 @@ function notifyObservers(command:any){
 }
 
 
-async function handle (req: any, res: any){
+async function handle (req: NextApiRequest, res: NextApiResponse){
 
     res.setHeader('Access-Control-Allow-Credentials', true)
     res.setHeader('Access-Control-Allow-Origin', '*, https://triade-group.vercel.app/*')
