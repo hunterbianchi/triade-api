@@ -380,5 +380,5 @@ async function handle (req: NextApiRequest, res: NextApiResponse){
 }
 
 export default withApiAuthRequired(
-  cors()(handler)
+  cors()(handler: Promise)
 )
