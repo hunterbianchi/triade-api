@@ -72,6 +72,10 @@ export class Block {
     }
 
     calculateHash() {
+        console.log(this.timestamp)
+        console.log(this.previousHash)
+        console.log(this.contracts)
+        console.log(this.nonce)
         return SHA256(`${this.timestamp}${this.previousHash}${typeof(this.contracts)==="object"?JSON.stringify(this.contracts):this.contracts}${this.nonce}`).toString()
     }
 
