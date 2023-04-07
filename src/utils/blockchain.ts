@@ -33,7 +33,7 @@ export class EmptyBlock {
     }
 
     calculateHash() {
-        return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.contracts) + this.nonce).toString();
+        return SHA256(`${this.previousHash}${this.timestamp}${JSON.stringify(this.contracts)}${this.nonce}`).toString();
     }
 
 }
@@ -72,7 +72,7 @@ export class Block {
     }
 
     calculateHash() {
-        return SHA256(this.timestamp+this.previousHash+JSON.stringify(this.contracts)+this.nonce).toString()
+        return SHA256(`${this.timestamp}${this.previousHash}${JSON.stringify(this.contracts)}${this.nonce}`).toString()
     }
 
 }
