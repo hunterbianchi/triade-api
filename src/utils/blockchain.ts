@@ -72,7 +72,7 @@ export class Block {
     }
 
     calculateHash() {
-        return SHA256(`${this.timestamp}${this.previousHash}${JSON.stringify(this.contracts)}${this.nonce}`).toString()
+        return SHA256(`${this.timestamp}${this.previousHash}${this.contracts.typeof()==="object"?JSON.stringify(this.contracts):this.contracts}${this.nonce}`).toString()
     }
 
 }
