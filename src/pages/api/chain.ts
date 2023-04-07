@@ -71,10 +71,10 @@ function notifyObservers(command:any){
 }
 
 
-async function handle (req: NextApiRequest, res: NextApiResponse){
+export default async function handle (req: NextApiRequest, res: NextApiResponse){
 
     res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Origin', '*, https://triade-group.vercel.app/*')
+    res.setHeader('Access-Control-Allow-Origin', '*, https://triade-group2.vercel.app/*')
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
     res.setHeader(
       'Access-Control-Allow-Headers',
@@ -379,6 +379,3 @@ async function handle (req: NextApiRequest, res: NextApiResponse){
     }
 }
 
-export default withApiAuthRequired(
-  cors()(handler: Promise)
-)
