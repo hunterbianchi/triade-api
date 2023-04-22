@@ -34,7 +34,7 @@ export function signHash( contractHash:string, privateKey:string ){
 }
 
 
-export function verifySignature(publicKey:string, hash:string | undefined, signature: string | undefined){
+export function verifySignature(publicKey:string, hash:string, signature: string){
         console.log(`\n =>\n =>\n${publicKey}\n${hash}\n${signature}\n=>\n${ec.keyFromPublic(publicKey, 'hex').verify(hash, signature)}\n=>\n =>\n =>\n =>\n =>`)
         return ec.keyFromPublic(publicKey, 'hex').verify(hash, signature)
 

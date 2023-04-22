@@ -441,11 +441,6 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                     businessNumber: token.data.businessAddress.businessNumber
                 }
             }
-
-            newToken.data.dataHash = SHA256(`${newToken.data.businessRating}${newToken.data.businessWallet}${newToken.data.businessName}${newToken.data.businessImage}${newToken.data.businessService}${newToken.data.businessProducts?JSON.stringify(newToken.data.businessProducts):null}${newToken.data.businessAddress?newToken.data.addressHash:null}`).toString()
-            
-            newToken.header.hash = SHA256(`${newToken.header.timestamp}${newToken.header.owner}${newToken.header.toAddress}${newToken.header.amount}${newToken.data.dataHash}`).toString()
-            
             
             console.log(newToken)
 
@@ -469,7 +464,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         console.log("Valid Signature")
                         
                         if(triade.getBalanceOfAddress(owner) >= amount){
-                            if(token.header.timestamp > triade.chain[triade.chain.length-1].token.header.timestamp){
+                            if(token.header.timestamp > triade.chain[triade.chain.length-1].timestamp){
                                 // const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
                                 const contract = new Contract(timestamp, owner, toAddress, amount, token, signature)
 
