@@ -2,7 +2,7 @@ import { SHA256 } from 'crypto-js'
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
 
-export class EmptyBlock {
+export class Block3 {
     
     timestamp: number
     contracts: any
@@ -40,18 +40,18 @@ export class EmptyBlock {
 
 export class Block {
 
-    timestamp: string    
+    timestamp: number    
     contracts: any    
     previousHash: string    
     nonce: number    
     hash: string        
 
-    constructor(timestamp: string, contracts: any, previousHash: string = '', nonce: number = 0, hash: string) {
+    constructor(timestamp: number, contracts: any, previousHash: string = '', nonce: number = 0) {
         this.timestamp = timestamp
         this.contracts = contracts
         this.previousHash = previousHash
         this.nonce = nonce
-        this.hash = hash
+        this.hash = this.calculateHash()
     }
 
     hasValidContracts(): boolean {
@@ -76,7 +76,15 @@ export class Block {
         console.log(this.previousHash)
         console.log(this.contracts)
         console.log(this.nonce)
-        return SHA256(`${this.timestamp}${this.previousHash}${typeof(this.contracts)==="object"?JSON.stringify(this.contracts):this.contracts}${this.nonce}`).toString()
+
+        const bl = {
+            timestamp: this.timestamp,
+            previousHash: this.previousHash,
+            contracts: this.contracts,
+            nonce: this.nonce,
+        }
+        console.log(SHA256(`${bl.timestamp}${bl.previousHash}${JSON.stringify(bl.contracts)}${bl.nonce}`).toString())
+        return SHA256(`${bl.timestamp}${bl.previousHash}${JSON.stringify(bl.contracts)}${bl.nonce}`).toString()
     }
 
 }
@@ -98,27 +106,50 @@ export class BlockChain {
         this.nodes = ["https://triade-api.vercel.app/api/chain"]
     }
   
+    
     updateChain(newChain: Array<any>){
-        if(newChain.length > this.chain.length){
 
+        if(newChain.length > this.chain.length){
+            console.log(`\t\t|\tReceived a larger (size: ${newChain.length}) chain...\n`)
+            console.log(`${newChain[0].hash}\n${this.chain[0].hash}`)
+            console.log(`${newChain[0].contracts}\n${this.chain[0].contracts}` )
+            
             if(newChain[0].hash === this.chain[0].hash){
+                console.log(`\t\t|\t...with the same genesis hash ${this.chain[0].hash}...`)
+
                 if(newChain[this.chain.length - 1].hash === this.chain[this.chain.length - 1].hash){
-                    for(let i = this.chain.length; i === newChain.length - 1; i++){
+
+                    console.log(`\t\t|\t...and the hash of the smallest chain is the same in the same position of the largest one. ${this.chain[this.chain.length - 1].hash}`)
+                    
+                    const chainLength = this.chain.length
+                    const newChainLength = newChain.length
+
+                    for (let i = chainLength; i < newChainLength; i++) {
+
+                        const block = newChain[i]
+
+                        // console.log(block)
+
+                        const newBlock = new Block(block.timestamp, block.contracts, block.previousHash, block.nonce)
+
                         
-                        const bl = newChain[i]
-                        if (this.getLatestBlock().hash === bl.previousHash){
-                            const block = new Block(bl.timestamp, bl.contracts, bl.previousHash, bl.nonce, bl.hash)
+                        if (block.hash.substring(0, this.target) === Array(this.target + 1).join("0")){
                             
-                            if (block.calculateHash() === bl.hash && bl.hash.substring(0, this.target) === Array(this.target + 1).join("0")){
-                                
-                                this.chain.push(block)
-                            }
+                            console.log(`\n\t\t|\tPOW!\n\n\n`)
+                            
+                            this.chain.push(newBlock)
                         }
                     }
+
+                }else{
+                    Object.assign(this.chain, newChain)
                 }
             }
+        }else{
+            alert(`chain no longer ${this.chain.length} !> ${JSON.stringify(newChain.length)}`)
         }
     }
+
 
     getDifficulty(): number {
         let currentDifficulty: number = 2;
@@ -168,8 +199,8 @@ export class BlockChain {
     }
     
     minePendingContracts(miningRewardAddress: string) {
-        let block = new EmptyBlock(Date.now(), this.pendingContracts, this.getLatestBlock().hash)
-        block.mineBlock(this.target)
+        let block = new Block(Date.now(), this.pendingContracts, this.getLatestBlock().hash)
+        block.mine(this.target)
         this.chain.push(block)
         this.pendingContracts = [new Contract(new Date().getTime(), null, miningRewardAddress, this.fee)]
     }
@@ -222,7 +253,8 @@ export class BlockChain {
             nonce: 0
         }
         newBlock.hash=SHA256(newBlock.timestamp + newBlock.previousHash + JSON.stringify(newBlock.contracts) + newBlock.nonce).toString()
-        return new Block(newBlock.timestamp, newBlock.contracts, undefined, newBlock.nonce, newBlock.hash);
+        console.log(newBlock.hash)
+        return new Block(newBlock.timestamp, newBlock.contracts, undefined, newBlock.nonce);
     }
 
 }

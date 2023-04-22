@@ -286,7 +286,8 @@ function treatResponse(response: any){
     e?.preventDefault()
     setIsLoading(true)
     try {
-      await fetch(`${baseURL}/chain`, {
+      // await fetch(`${baseURL}/chain`, {
+      await fetch(`http://localhost:3001/api/chain`, {
         method: 'GET',
         headers: {
           'Content-Type':'application/json'
@@ -301,7 +302,8 @@ function treatResponse(response: any){
       setIsLoading(false)
     }finally{
       try {
-        await fetch(`${baseURL}/chain`, {
+        // await fetch(`${baseURL}/chain`, {
+        await fetch(`http://localhost:3001/api/chain`, {
           method: 'POST',
           headers: {
             'Content-Type':'application/json'
@@ -344,7 +346,8 @@ function treatResponse(response: any){
     e?.preventDefault()
 
     try {
-      await fetch(`${baseURL}/chain`, {
+      // await fetch(`${baseURL}/chain`, {
+      await fetch(`http://localhost:3001/api/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
@@ -366,7 +369,8 @@ function treatResponse(response: any){
 
       if(myChainHeader.chainLength > myChain.length && myChainHeader.genesisHash === myChain[0]?.hash ){
         try {
-          await fetch(`${baseURL}/chain`, {
+          // await fetch(`${baseURL}/chain`, {
+          await fetch(`http://localhost:3001/api/chain`, {
             method: 'POST',
             headers: {
               'Content-Type':'application/json'
@@ -388,7 +392,9 @@ function treatResponse(response: any){
           
           const newBlock = new BlockMock(new Date().getTime(), pendingDatas, )
       
-          await fetch(`${baseURL}/chain`, {
+          
+          // await fetch(`${baseURL}/chain`, {
+          await fetch(`http://localhost:3001/api/chain`, {
             method: 'POST',
             headers: {
               'Content-Type':'application/json'
@@ -616,7 +622,8 @@ export async function getServerSideProps(context: any) {
 
 
   try {
-    await fetch(`${baseURL}/chain`, {
+      // await fetch(`${baseURL}/chain`, {
+      await fetch(`http://localhost:3001/api/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
@@ -635,7 +642,8 @@ export async function getServerSideProps(context: any) {
     throw new Error(`Error while fetching chain from ${baseURL}/chain`)
   } finally {
     try {
-      await fetch(`${baseURL}/chain`, {
+      // await fetch(`${baseURL}/chain`, {
+      await fetch(`http://localhost:3001/api/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
