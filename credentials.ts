@@ -7,8 +7,8 @@ export const options = {
 	// PRODUÇÃO = false
 	// HOMOLOGAÇÃO = true
     sandbox: environment==='dev',
-    client_id,
-    client_secret,
+    client_id: client_id?client_id:'',
+    client_secret: client_secret?client_secret:'',
     certificate,
 }
 
