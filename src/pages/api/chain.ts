@@ -8,6 +8,69 @@ import { BlockChain, Block, Contract } from '../../utils/blockchain'
 import { getKeyPair, signHash, verifySignature } from '../../utils/wallet'
 import { opCodeToObject } from '../../utils/opCode'
 
+import CryptoJs from 'crypto-js'
+
+import Gerencianet from 'gn-api-sdk-typescript'
+
+import {options}  from '../.././../credentials'
+
+const gerencianet = new Gerencianet(options)
+
+function createCharge(){
+
+    let body = {
+        calendario: {
+            expiracao: 3600,
+        },
+        devedor: {
+            cpf: '94271564656',
+            nome: 'Gorbadock Oldbuck',
+        },
+        valor: {
+            original: '730.37',
+        },
+        chave: '75528014-a16b-4f96-8b64-c57391a60459',
+        infoAdicionais: [
+            {
+                nome: 'Token Price (BRL)',
+                valor: '737.78',
+            },
+            {
+                nome: 'Token Amount',
+                valor: '1',
+            },
+            {
+                nome: 'Wallet Address',
+                valor: '0',
+            },
+            {
+                nome: 'Pedido',
+                valor: '0',
+            },
+        ],
+    }
+    
+    console.log((new Date().getTime()+CryptoJs.HmacRIPEMD160(body.devedor.cpf, '5f7d07e631bbf9b7d687c875e463e1f03d389c93dfb0c0c42af7f2d1dc9f75c').toString(CryptoJs.enc.Hex).slice(24)).length)
+    console.log(CryptoJs.HmacRIPEMD160(body.devedor.cpf, '5f7d07e631bbf9b7d687c875e463e1f03d389c93dfb0c0c42af7f2d1dc9f75c').toString(CryptoJs.enc.Hex).slice(24))
+    
+    let params = {
+        txid: new Date().getTime()+CryptoJs.HmacRIPEMD160(body.devedor.cpf, '5f7d07e631bbf9b7d687c875e463e1f03d389c93dfb0c0c42af7f2d1dc9f75c').toString(CryptoJs.enc.Hex).slice(24),
+    }
+    
+    
+    
+    gerencianet.pixCreateCharge(params, body)
+    .then((resposta: Promise<any>) => {
+        console.log(resposta)
+        return resposta
+    })
+    .catch((error: Promise<any>) => {
+        console.log("Error "+JSON.stringify(error))
+        return error
+    })
+}
+
+
 const triade = new BlockChain()
 
 type TokenHeaderType = {
@@ -178,7 +241,79 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
         }
  */
         
-        if(type === 'new-offer' ){
+        if(type==='get-token-price'){
+
+            const tokenPrice = 737.78
+            const pixKey = '75528014-a16b-4f96-8b64-c57391a60459'
+            
+            const token:any = body.data
+            token.tadAmount = token.tadAmount >= 1? token.tadAmount : 1
+            token.brlAmount = tokenPrice*token.tadAmount
+            token.hash = SHA256(`${token.timestamp}${token.walletAddress}${token.tadAmount}${token.brlAmount}`).toString()            
+
+            let chargeData = {
+                calendario: {
+                    expiracao: 3600,
+                },
+                valor: {
+                    original: `${token.brlAmount}`,
+                },
+                chave: pixKey,
+                infoAdicionais: [
+                    {
+                        nome: 'Token Price (BRL - TAD)',
+                        valor: tokenPrice.toString(),
+                    },
+                    {
+                        nome: 'Token Amount',
+                        valor: token.tadAmount.toString(),
+                    },
+                    {
+                        nome: 'Total',
+                        valor: token.brlAmount.toString(),
+                    },
+                    {
+                        nome: 'Wallet Address',
+                        valor: token.walletAddress,
+                    },
+                    {
+                        nome: 'Token Hash',
+                        valor: token.hash,
+                    },
+                ],
+            }
+            
+            const params = {
+                txid: token.txId
+            }
+            
+
+            const charge = await gerencianet.pixCreateCharge(params, chargeData)
+            .then((resposta: Promise<any>) => {
+                
+                return resposta
+            })
+            .catch((error: Promise<any>) => {
+                console.log("Error "+JSON.stringify(error))
+                return error
+            })
+            
+            const qrCode = await gerencianet.pixGenerateQRCode({id: charge.loc.id})
+            .then((resposta: Promise<any>) => {
+                return resposta
+            })
+            .catch((error: Promise<any>) => {
+                console.log(error);
+            });
+
+            return res.json({
+                token,
+                brlAmount: token.brlAmount,
+                charge,
+                qrCode,
+            })
+
+        }else if(type === 'new-offer' ){
             addOffer(body.data)
             res.json({
                 type: 'new-offer-list',
@@ -226,6 +361,46 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             res.json({
                 type: 'new-pending-datas',
                 data: triade.pendingContracts
+            })
+            return
+        }else if(type === 'sliced-token' ){
+
+            const token = body.data
+            const currentSlice = body.currentSlice
+            const slices = body.slices
+
+
+            const tokens: any = {}
+
+            if(token.header.type === 'stream-token'){
+
+                if(token.header.owner && token.header.hash){
+
+                    tokens[token.header.owner][token.header.hash] = token
+                }
+                
+            }else{
+
+            }
+            const data = body.data.header.type
+            
+            console.log(`
+                ========>>>>> type=${type}
+                ========>>>>> currentSlice=${currentSlice}
+                ========>>>>> slices=${slices}
+                ========>>>>> data=${data}
+            `)
+
+
+
+            setTimeout(()=>{
+                console.log(JSON.stringify(body.currentSlice))
+
+            },3000)
+            
+            res.json({
+                type: `Waiting-${'nslice'}-of-${'qslice'}`,
+                data: triade.fee
             })
             return
         }else if(type === 'get-token-post-price' ){
