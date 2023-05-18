@@ -304,7 +304,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             })
             .catch((error: Promise<any>) => {
                 console.log(error);
-            });
+            })
 
             return res.json({
                 token,
