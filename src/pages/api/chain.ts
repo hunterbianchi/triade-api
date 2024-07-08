@@ -538,6 +538,28 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 data: triade.chain
             })
 
+        }else if(type === 'new-chain' ){
+
+            const clientChain = body.data
+            
+            if(clientChain.length > triade.chain.length && clientChain[triade.chain.length -1].hash === triade.chain[triade.chain.length -1].hash){
+                for( let i = triade.chain.length -1 ; i < clientChain.length ; i++ ){
+                    const remoteBlock = clientChain[i]
+                    const block = new Block(remoteBlock.timestamp, remoteBlock.contracts, remoteBlock.previousHash, remoteBlock.nonce)
+                    
+                    console.log("New Block", block)
+                    console.log("New Hash", block.hash)
+                    console.log("New Previous Hash", block.previousHash)
+
+                    if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
+                        triade.chain.push(block)
+                        
+                    return res.json({
+                        type: 'new-chain',
+                        data: triade.chain
+                    })
+                }
+            }
         }else if(type === 'get-chain-header' ){
 
             if(body.data.genesisHash === getChainHeader().genesisHash){
