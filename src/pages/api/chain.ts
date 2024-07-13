@@ -569,7 +569,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                             triade.chain.push(block)
                             
                         return res.json({
-                            type: 'new-chain',
+                            type: 'new-chain-test',
                             data: triade.chain
                         })
                     }
@@ -608,11 +608,11 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 })
                 return
             } else {
-                res.json({
-                    type: 'new-chain',
-                    data: triade.chain
-                })
-                return
+            res.json({
+                type: 'new-chain',
+                data: triade.chain
+            })
+            return
             }
 
         }
