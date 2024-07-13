@@ -553,7 +553,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                     console.log("Length diff", lenghtDiff)
 
                     return res.json({
-                        type: 'new-chain',
+                        type: 'new-chain-hello',
                         data: triade.chain
                     })
                 } else if(clientChain[triade.chain.length - 1].hash === triade.chain[triade.chain.length - 1].hash){
