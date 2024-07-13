@@ -541,18 +541,13 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
         }else if(type === 'new-chain' ){
             
             const clientChain = body.data
-
-            clientChain.forEach()
-            
-            const lastBlock = triade.chain.find(blockElement=>{
-                blockElement.hash === ''
-            })
             
             if(clientChain.length > triade.chain.length && clientChain[0].hash === triade.chain[0].hash){
 
                 const lenghtDiff = clientChain.length - triade.chain.length
 
                 if(lenghtDiff > 6){
+                    Object.assing(triade.chain, clientChain)
                     
                     console.log("New Chain", clientChain)
                     console.log("Length diff", lenghtDiff)
