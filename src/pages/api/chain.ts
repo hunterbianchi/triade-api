@@ -567,7 +567,9 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
     
                         if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
                             triade.chain.push(block)
-                            
+                        }else{
+                            return
+                        }
                         return res.json({
                             type: 'new-chain-test',
                             data: triade.chain
