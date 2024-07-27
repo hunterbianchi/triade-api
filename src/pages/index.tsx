@@ -623,7 +623,7 @@ export async function getServerSideProps(context: any) {
 
   try {
       await fetch(`${baseURL}/chain`, {
-      // await fetch(`http://localhost:30000/api/chain`, {
+      // await fetch(`http://localhost:3000/api/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
@@ -644,7 +644,7 @@ export async function getServerSideProps(context: any) {
   } finally {
     try {
       await fetch(`${baseURL}/chain`, {
-      // await fetch(`http://localhost:30000/api/chain`, {
+      // await fetch(`http://localhost:3000/api/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
