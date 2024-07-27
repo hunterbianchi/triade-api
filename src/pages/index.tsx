@@ -622,8 +622,8 @@ export async function getServerSideProps(context: any) {
 
 
   try {
-      // await fetch(`${baseURL}/chain`, {
-      await fetch(`http://localhost:3001/api/chain`, {
+      await fetch(`${baseURL}/chain`, {
+      // await fetch(`http://localhost:3000/api/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
@@ -639,11 +639,12 @@ export async function getServerSideProps(context: any) {
       Object.assign(chainHeader, newChainHeader)
     })
   } catch (error) {
+    console.log(`${baseURL}`)
     throw new Error(`Error while fetching chain from ${baseURL}/chain`)
   } finally {
     try {
-      // await fetch(`${baseURL}/chain`, {
-      await fetch(`http://localhost:3001/api/chain`, {
+      await fetch(`${baseURL}/chain`, {
+      // await fetch(`http://localhost:3000/api/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
