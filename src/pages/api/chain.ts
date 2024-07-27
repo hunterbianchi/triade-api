@@ -137,7 +137,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
     
     const { method } = req
 
-    console.log(method)
+    // console.log(method)
     
     if (req.method === 'OPTIONS') {
         res.status(200).end()
@@ -147,13 +147,13 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Access-Control-Allow-Origin','*')
 
     if(method === 'POST'){
-        console.log(typeof(req.body))
-        console.log(req.body)
+        // console.log(typeof(req.body))
+        // console.log(req.body)
         
         const body = typeof(req.body)==='object'?req.body:JSON.parse(req.body)
         const type = body.type
         
-        console.log(body)
+        // console.log(body)
         
 /* 
         {
@@ -290,7 +290,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         
             newToken.header.hash = SHA256(`${newToken.header.timestamp}${newToken.header.owner}${newToken.header.toAddress}${newToken.header.amount}${newToken.data.dataHash}`).toString()
             
-            console.log(newToken)
+            // console.log(newToken)
 
             return res.json({
                 type: 'new-token-post-price',
@@ -334,7 +334,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
 
             */
 
-            console.log(body.data)
+            // console.log(body.data)
 
             /* 
                 {
@@ -406,7 +406,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 }
              */
 
-            console.log(token)
+            // console.log(token)
 
             const newToken: BusinessType = {
                 header:{
@@ -447,7 +447,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             newToken.header.hash = SHA256(`${newToken.header.timestamp}${newToken.header.owner}${newToken.header.toAddress}${newToken.header.amount}${newToken.data.dataHash}`).toString()
             
             
-            console.log(newToken)
+            // console.log(newToken)
 
             const timestamp = newToken.header.timestamp
             const owner = newToken.header.owner
@@ -458,31 +458,31 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             const dataHash = newToken.data.dataHash
             
 
-            console.log(`\n\nData hash: ${dataHash}`)
-            console.log(`Hash: ${hash}`)
-            console.log(`Signature: ${signature}`)
-            console.log(`Balance: ${triade.getBalanceOfAddress(owner)}`)
-            console.log(`Is sig val?: ${verifySignature(owner, hash, signature)}\n`)
+            // console.log(`\n\nData hash: ${dataHash}`)
+            // console.log(`Hash: ${hash}`)
+            // console.log(`Signature: ${signature}`)
+            // console.log(`Balance: ${triade.getBalanceOfAddress(owner)}`)
+            // console.log(`Is sig val?: ${verifySignature(owner, hash, signature)}\n`)
 
                     
                     if(verifySignature(newToken.header.owner, newToken.header.hash, newToken.header.signature)){
-                        console.log("Valid Signature")
+                        // console.log("Valid Signature")
                         
                         if(triade.getBalanceOfAddress(owner) >= amount){
                             if(token.header.timestamp > triade.chain[triade.chain.length-1].token.header.timestamp){
                                 // const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
                                 const contract = new Contract(timestamp, owner, toAddress, amount, token, signature)
 
-                                console.log(`New Contract:\n${JSON.stringify(contract)}`)
+                                // console.log(`New Contract:\n${JSON.stringify(contract)}`)
 
                                 if(contract.isValid()){
 
-                                    console.log(`Is Valid?: ${(contract.isValid())}`)
+                                    // console.log(`Is Valid?: ${(contract.isValid())}`)
                                     triade.addContract(contract)
                                     // "8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505"
                                     
                                     triade.minePendingContracts("04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df")
-                                    console.log(triade.pendingContracts)
+                                    // console.log(triade.pendingContracts)
                                     
                                     return res.json({
                                         type: 'new-business',
@@ -529,7 +529,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
 
         }else if(type === 'get-chain' ){
 
-            console.log(req.body)
+            // console.log(req.body)
             
             triade.minePendingContracts("04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df")
 
@@ -543,14 +543,15 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             const clientChain = body.data
             
             if(clientChain.length > triade.chain.length && clientChain[0].hash === triade.chain[0].hash){
+                console.log(`${clientChain.length}`)
 
                 const lenghtDiff = clientChain.length - triade.chain.length
 
                 if(lenghtDiff > 6){
                     Object.assign(triade.chain, clientChain)
                     
-                    console.log("New Chain", clientChain)
-                    console.log("Length diff", lenghtDiff)
+                    // console.log("New Chain", clientChain)
+                    // console.log("Length diff", lenghtDiff)
 
                     return res.json({
                         type: 'new-chain-hello',
@@ -561,9 +562,9 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         const remoteBlock = clientChain[i]
                         const block = new Block(remoteBlock.timestamp, remoteBlock.contracts, remoteBlock.previousHash, remoteBlock.nonce)
                         
-                        console.log("New Block", block)
-                        console.log("New Hash", block.hash)
-                        console.log("New Previous Hash", block.previousHash)
+                        // console.log("New Block", block)
+                        // console.log("New Hash", block.hash)
+                        // console.log("New Previous Hash", block.previousHash)
     
                         if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
                             triade.chain.push(block)
@@ -604,9 +605,9 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
 
             const block = new Block(clientBlock.timestamp, clientBlock.contracts, clientBlock.previousHash, clientBlock.nonce)
             
-            console.log("New Block", block)
-            console.log("New Hash", block.hash)
-            console.log("New Previous Hash", block.previousHash)
+            // console.log("New Block", block)
+            // console.log("New Hash", block.hash)
+            // console.log("New Previous Hash", block.previousHash)
 
             if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
                 triade.chain.push(block)

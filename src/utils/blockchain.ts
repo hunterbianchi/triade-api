@@ -72,10 +72,10 @@ export class Block {
     }
 
     calculateHash() {
-        console.log(this.timestamp)
-        console.log(this.previousHash)
-        console.log(this.contracts)
-        console.log(this.nonce)
+        // console.log(this.timestamp)
+        // console.log(this.previousHash)
+        // console.log(this.contracts)
+        // console.log(this.nonce)
 
         const bl = {
             timestamp: this.timestamp,
@@ -83,7 +83,7 @@ export class Block {
             contracts: this.contracts,
             nonce: this.nonce,
         }
-        console.log(SHA256(`${bl.timestamp}${bl.previousHash}${JSON.stringify(bl.contracts)}${bl.nonce}`).toString())
+        // console.log(SHA256(`${bl.timestamp}${bl.previousHash}${JSON.stringify(bl.contracts)}${bl.nonce}`).toString())
         return SHA256(`${bl.timestamp}${bl.previousHash}${JSON.stringify(bl.contracts)}${bl.nonce}`).toString()
     }
 
@@ -110,16 +110,16 @@ export class BlockChain {
     updateChain(newChain: Array<any>){
 
         if(newChain.length > this.chain.length){
-            console.log(`\t\t|\tReceived a larger (size: ${newChain.length}) chain...\n`)
-            console.log(`${newChain[0].hash}\n${this.chain[0].hash}`)
-            console.log(`${newChain[0].contracts}\n${this.chain[0].contracts}` )
+            // console.log(`\t\t|\tReceived a larger (size: ${newChain.length}) chain...\n`)
+            // console.log(`${newChain[0].hash}\n${this.chain[0].hash}`)
+            // console.log(`${newChain[0].contracts}\n${this.chain[0].contracts}` )
             
             if(newChain[0].hash === this.chain[0].hash){
-                console.log(`\t\t|\t...with the same genesis hash ${this.chain[0].hash}...`)
+                // console.log(`\t\t|\t...with the same genesis hash ${this.chain[0].hash}...`)
 
                 if(newChain[this.chain.length - 1].hash === this.chain[this.chain.length - 1].hash){
 
-                    console.log(`\t\t|\t...and the hash of the smallest chain is the same in the same position of the largest one. ${this.chain[this.chain.length - 1].hash}`)
+                    // console.log(`\t\t|\t...and the hash of the smallest chain is the same in the same position of the largest one. ${this.chain[this.chain.length - 1].hash}`)
                     
                     const chainLength = this.chain.length
                     const newChainLength = newChain.length
@@ -128,14 +128,14 @@ export class BlockChain {
 
                         const block = newChain[i]
 
-                        // console.log(block)
+                        // // console.log(block)
 
                         const newBlock = new Block(block.timestamp, block.contracts, block.previousHash, block.nonce)
 
                         
                         if (block.hash.substring(0, this.target) === Array(this.target + 1).join("0")){
                             
-                            console.log(`\n\t\t|\tPOW!\n\n\n`)
+                            // console.log(`\n\t\t|\tPOW!\n\n\n`)
                             
                             this.chain.push(newBlock)
                         }
@@ -165,7 +165,7 @@ export class BlockChain {
             if(calc == 0){
                 const ttltime = (latest_block.timestamp - under2016_block.timestamp);
 
-                console.log(`bloco: ${this.chain.length-1}`)
+                // console.log(`bloco: ${this.chain.length-1}`)
             }
         } */
         return currentDifficulty;
@@ -179,13 +179,7 @@ export class BlockChain {
         if (this.getBalanceOfAddress(contract.fromAddress) >= contract.amount) {
             
             if (contract.isValid()) {
-                console.log(`
-        _____________________________________
-        |       transactionsisvalid?:       |
-         |       ${contract.isValid()}                        |
-           |___________________________________|
-                
-                `)
+                // console.log(`Nice!`)
             }
             if (!contract.isValid()) {
                 throw new Error('Cannot add invalid contract to the chain');
@@ -253,7 +247,7 @@ export class BlockChain {
             nonce: 0
         }
         newBlock.hash=SHA256(newBlock.timestamp + newBlock.previousHash + JSON.stringify(newBlock.contracts) + newBlock.nonce).toString()
-        console.log(newBlock.hash)
+        // console.log(newBlock.hash)
         return new Block(newBlock.timestamp, newBlock.contracts, undefined, newBlock.nonce);
     }
 
@@ -293,7 +287,7 @@ export class Contract {
 
 
     isValid(): boolean {
-        console.log(`\n\n${(JSON.stringify(this.signature))}\n\n`)
+        // console.log(`\n\n${(JSON.stringify(this.signature))}\n\n`)
         if (this.fromAddress === null) return true
 
         if (!this.signature || this.signature.length === 0) {
@@ -315,7 +309,7 @@ const alicePrivateKey = '815eeac8fcb9aee5d097ad6cedc3d2310c1c258d67b50bda9377c1b
 const alicePublicKey = '04a9d3154a24b2aebb23f30f920ded627e131e0a3eb2624c4506842f6299ed1b29a51bd772ca0208c638c37224409e9d51b476989995482ec0f5fc4a93d3c034e0'
 
 
-console.log(block)
+// console.log(block)
  */
 
 /* 
@@ -332,19 +326,19 @@ triade.addTransaction(tx1);
 
 // Tunelling transactions and asingnment to full nodes
 triade.minePendingTransactions(myWalletAddress);
-console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
+// console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
 const tx2 = new Transaction(alicePublicKey, myWalletAddress, 20);
 tx2.signTransaction(alicePrivateKey);
 triade.minePendingTransactions(myWalletAddress);
-console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
+// console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
 const tx3 = new Transaction(myWalletAddress, alicePublicKey, 60);
 tx3.signTransaction(myPrivateKey);
 triade.addTransaction(tx3);
 triade.minePendingTransactions(myWalletAddress);
-console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
+// console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey));
 const tx4 = new Transaction(alicePublicKey, myWalletAddress, 20);
 tx4.signTransaction(alicePrivateKey);
 triade.addTransaction(tx4);
 triade.minePendingTransactions(myWalletAddress);
-console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey)); */
+// console.log("Balance of Alice's account is: ", triade.getBalanceOfAddress(alicePublicKey)); */
 

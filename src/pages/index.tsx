@@ -152,7 +152,7 @@ function treatResponse(response: any){
   /* 
     function getBalanceOf(walletAddres:string){
   
-      console.log('target wallet', walletAddres)
+      // console.log('target wallet', walletAddres)
       let balance:number = 0
   
       for (let i = 0; i < chain.length; i++) {
@@ -162,16 +162,16 @@ function treatResponse(response: any){
         for(const dataHash in block.data){
   
           const data = block.data[dataHash]
-          console.log('data', data)
+          // console.log('data', data)
   
           if(data.toAddress && data.toAddress === walletAddres){
   
-            console.log('to address?', walletAddres === data.toAddress)
+            // console.log('to address?', walletAddres === data.toAddress)
             balance = balance + data.amount
   
           }else if (data.fromAddress && data.fromAddress === walletAddres){
   
-            console.log('from address?', walletAddres === data.fromAddress)
+            // console.log('from address?', walletAddres === data.fromAddress)
             balance = balance - data.amount
   
           }
@@ -197,10 +197,10 @@ function treatResponse(response: any){
         await fetch(endpoint ? endpoint : `${baseURL}api/chain`).then(res => res.json())
           .then(res => {
             if (res.length > 0) {
-              console.log('chain', res)
+              // console.log('chain', res)
               setChain(res)
             } else if (Object.keys(res).length > 0) {
-              console.log('pending', res)
+              // console.log('pending', res)
               setPendings(res)
             }
           })
@@ -212,7 +212,7 @@ function treatResponse(response: any){
       const data = () => {
 
         if (body) {
-          console.log(method, eval(body), ' at ', endpoint)
+          // console.log(method, eval(body), ' at ', endpoint)
           return eval(body)
         } else {
           return []
@@ -244,11 +244,11 @@ function treatResponse(response: any){
         await fetch(endpoint ? endpoint : `${baseURL}api/pendings`, options).then(res => res.json())
           .then(res => {
             if (res.length > 0) {
-              console.log('chain', res)
+              // console.log('chain', res)
               setChain(res)
               setMethod('get')
             } else if (Object.keys(res).length > 0) {
-              console.log('pending', res)
+              // console.log('pending', res)
               setPendings(res)
               setMethod('get')
             }
@@ -258,7 +258,7 @@ function treatResponse(response: any){
 
     } else if (method === 'delete') {
 
-      console.log('endpoint', endpoint)
+      // console.log('endpoint', endpoint)
 
       try {
         await fetch(endpoint ? endpoint : `${baseURL}api/pendings`, {
@@ -267,10 +267,10 @@ function treatResponse(response: any){
           .then(res => res.json())
           .then(res => {
             if (typeof (res.length) === 'number') {
-              console.log('chain', res)
+              // console.log('chain', res)
               setChain(res)
             } else if (typeof (Object.keys(res).length) === 'number') {
-              console.log('pending', res)
+              // console.log('pending', res)
               setPendings(res)
             }
           })
@@ -287,13 +287,13 @@ function treatResponse(response: any){
     setIsLoading(true)
     try {
       // await fetch(`${baseURL}/chain`, {
-      await fetch(`http://localhost:3001/api/chain`, {
+      await fetch(`${baseURL}/chain`, {
         method: 'GET',
         headers: {
           'Content-Type':'application/json'
         }
       }).then(res=>res.json()).then(res=>{
-        console.log(res.type, res.data)
+        // console.log(res.type, res.data)
         setMyChainHeader(res.data)
       })
 
@@ -303,7 +303,7 @@ function treatResponse(response: any){
     }finally{
       try {
         // await fetch(`${baseURL}/chain`, {
-        await fetch(`http://localhost:3001/api/chain`, {
+        await fetch(`${baseURL}/chain`, {
           method: 'POST',
           headers: {
             'Content-Type':'application/json'
@@ -313,7 +313,7 @@ function treatResponse(response: any){
             data: myChain
           })
         }).then(res=>res.json()).then(res=>{
-          console.log(res.type, res.data)
+          // console.log(res.type, res.data)
           setMyChain(res.data)
         })      
       } catch (error) {
@@ -335,7 +335,7 @@ function treatResponse(response: any){
     }
     block.hash = SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()
   
-    console.log(block)
+    // console.log(block)
 
     return block
   }
@@ -347,7 +347,7 @@ function treatResponse(response: any){
 
     try {
       // await fetch(`${baseURL}/chain`, {
-      await fetch(`http://localhost:3001/api/chain`, {
+      await fetch(`${baseURL}/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
@@ -357,7 +357,7 @@ function treatResponse(response: any){
           data: myChainHeader
         })
       }).then(res=>res.json()).then(res=>{
-        console.log(`${res.type}:\n`, res)
+        // console.log(`${res.type}:\n`, res)
         if(res.type === 'new-chain-header'){
           const newChainHeader = res.data
           setMyChainHeader(newChainHeader)
@@ -370,7 +370,7 @@ function treatResponse(response: any){
       if(myChainHeader.chainLength > myChain.length && myChainHeader.genesisHash === myChain[0]?.hash ){
         try {
           // await fetch(`${baseURL}/chain`, {
-          await fetch(`http://localhost:3001/api/chain`, {
+          await fetch(`${baseURL}/chain`, {
             method: 'POST',
             headers: {
               'Content-Type':'application/json'
@@ -380,7 +380,7 @@ function treatResponse(response: any){
               data: myChain
             })
           }).then(res=>res.json()).then(res=>{
-            console.log(`${res.type}:\n`, res)
+            // console.log(`${res.type}:\n`, res)
             if(res.type === 'new-chain'){
               const newChain = res.data
               setMyChain(newChain)
@@ -394,7 +394,7 @@ function treatResponse(response: any){
       
           
           // await fetch(`${baseURL}/chain`, {
-          await fetch(`http://localhost:3001/api/chain`, {
+          await fetch(`${baseURL}/chain`, {
             method: 'POST',
             headers: {
               'Content-Type':'application/json'
@@ -405,7 +405,7 @@ function treatResponse(response: any){
               data: newBlock
             })
           }).then(res=>res.json()).then(res=>{
-            console.log(`${res.type}:\n`, res)
+            // console.log(`${res.type}:\n`, res)
             treatResponse(res)
             return
           })
@@ -593,9 +593,9 @@ function treatResponse(response: any){
       {Object.keys(pendings).length > 0 && showing === 'pendings' && <S.PendingsContainer>
         
         {Object.keys(pendings).map((dataHash) => {
-        console.log('jdhafjzsgh ', dataHash)
+        // console.log('jdhafjzsgh ', dataHash)
         const pending = pendings[dataHash]
-        console.log(pendings[dataHash])
+        // console.log(pendings[dataHash])
         return (
           <PendingDisplay key={dataHash} data={pending} />
         )
@@ -614,7 +614,7 @@ export async function getServerSideProps(context: any) {
 
   const chain: Array<any> = require('../json/chain.json')
   const genesis = chain[0]
-  console.log(genesis)
+  // console.log(genesis)
 
   const orderList = {}
   const offerList = {}
@@ -623,7 +623,7 @@ export async function getServerSideProps(context: any) {
 
   try {
       await fetch(`${baseURL}/chain`, {
-      // await fetch(`http://localhost:3000/api/chain`, {
+      // await fetch(`http://localhost:30000/api/chain`, {
       method: 'POST',
       headers: {
         'Content-Type':'application/json'
@@ -639,12 +639,12 @@ export async function getServerSideProps(context: any) {
       Object.assign(chainHeader, newChainHeader)
     })
   } catch (error) {
-    console.log(`${baseURL}`)
+    // console.log(`${baseURL}`)
     throw new Error(`Error while fetching chain from ${baseURL}/chain`)
   } finally {
     try {
       await fetch(`${baseURL}/chain`, {
-      // await fetch(`http://localhost:3000/api/chain`, {
+      // await fetch(`http://localhost:30000/api/chain`, {
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
