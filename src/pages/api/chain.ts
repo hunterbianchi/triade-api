@@ -202,17 +202,17 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             return
         }else if(type === 'get-balance'){
 
-          const wallet = body.data
+          // const wallet = body.data
+          const wallet = '04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df'
           const balance = triade.getBalanceOfAddress(wallet)
 
-            res.json({
+            return res.json({
                 type: 'balance',
                 data: {
                     balance,
                     wallet,
                 }
             })
-            return
 
         }else if(type === 'get-endpoint-list' ){
             
@@ -530,8 +530,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
         }else if(type === 'get-chain' ){
 
             // console.log(req.body)
-            
-            triade.minePendingContracts("04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df")
+    triade.minePendingContracts("04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df")
 
             return res.json({
                 type: 'new-chain',
@@ -553,10 +552,11 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                     // console.log("New Chain", clientChain)
                     // console.log("Length diff", lenghtDiff)
 
-                    return res.json({
-                        type: 'new-chain-hello',
+                    res.json({
+                        type: 'new-chain-assign',
                         data: triade.chain
                     })
+                    return
                 } else if(clientChain[triade.chain.length - 1].hash === triade.chain[triade.chain.length - 1].hash){
                     for( let i = triade.chain.length -1 ; i < clientChain.length ; i++ ){
                         const remoteBlock = clientChain[i]
@@ -569,19 +569,21 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
                             triade.chain.push(block)
                         }else{
-                            return res.json({
+                            res.json({
                                 type: 'error',
                                 error: {
                                     message: "Your chain are broken!",
                                     code: "0001"
                                 }
                             })
+                            return
                         }
                     }
-                    return res.json({
+                    res.json({
                         type: 'new-chain-test',
                         data: triade.chain
                     })
+                    return
                 }
 
             }
@@ -617,11 +619,11 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 })
                 return
             } else {
-            res.json({
-                type: 'new-chain',
-                data: triade.chain
-            })
-            return
+                res.json({
+                    type: 'new-chain',
+                    data: triade.chain
+                })
+                return
             }
 
         }
