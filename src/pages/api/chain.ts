@@ -547,7 +547,10 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 const lenghtDiff = clientChain.length - triade.chain.length
 
                 if(lenghtDiff > 6){
-                    Object.assign(triade.chain, clientChain)
+                
+                    triade.updateChain(clientChain)
+                    
+                    // Object.assign(triade.chain, clientChain)
                     
                     // console.log("New Chain", clientChain)
                     // console.log("Length diff", lenghtDiff)
