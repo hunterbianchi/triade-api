@@ -21,6 +21,7 @@ type TokenHeaderType = {
     signature?: string;
 }
 
+
 type TokenPayloadType = {
     businessName: string;
     businessService: string;
