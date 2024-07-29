@@ -542,54 +542,57 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             
             const clientChain = body.data
             
-            if(clientChain.length > triade.chain.length && clientChain[0].hash === triade.chain[0].hash){
+            if(clientChain.length > triade.chain.length){
+
                 console.log(`${clientChain.length}`)
-
-                const lenghtDiff = clientChain.length - triade.chain.length
-
-                if(lenghtDiff > 6){
                 
-                    triade.updateChain(clientChain)
-                    
-                    // Object.assign(triade.chain, clientChain)
-                    
-                    // console.log("New Chain", clientChain)
-                    // console.log("Length diff", lenghtDiff)
+                if(clientChain[0].hash === triade.chain[0].hash){
+                    const lenghtDiff = clientChain.length - triade.chain.length
 
-                    res.json({
-                        type: 'new-chain-assign',
-                        data: triade.chain
-                    })
-                    return
-                } else if(clientChain[triade.chain.length - 1].hash === triade.chain[triade.chain.length - 1].hash){
-                    for( let i = triade.chain.length -1 ; i < clientChain.length ; i++ ){
-                        const remoteBlock = clientChain[i]
-                        const block = new Block(remoteBlock.timestamp, remoteBlock.contracts, remoteBlock.previousHash, remoteBlock.nonce)
+                    if(lenghtDiff > 6){
                         
-                        // console.log("New Block", block)
-                        // console.log("New Hash", block.hash)
-                        // console.log("New Previous Hash", block.previousHash)
-    
-                        if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
-                            triade.chain.push(block)
-                        }else{
-                            res.json({
-                                type: 'error',
-                                error: {
-                                    message: "Your chain are broken!",
-                                    code: "0001"
-                                }
-                            })
-                            return
-                        }
-                    }
-                    res.json({
-                        type: 'new-chain-test',
-                        data: triade.chain
-                    })
-                    return
-                }
+                        Object.assign(triade.chain, clientChain)
 
+                        res.json({
+                            type: 'new-chain-assign',
+                            data: triade.chain
+                        })
+                        return
+                    } else if(clientChain[triade.chain.length - 1].hash === triade.chain[triade.chain.length - 1].hash){
+                        for( let i = triade.chain.length -1 ; i < clientChain.length ; i++ ){
+                            const remoteBlock = clientChain[i]
+                            const block = new Block(remoteBlock.timestamp, remoteBlock.contracts, remoteBlock.previousHash, remoteBlock.nonce)
+                            
+                            // console.log("New Block", block)
+                            // console.log("New Hash", block.hash)
+                            // console.log("New Previous Hash", block.previousHash)
+        
+                            if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
+                                triade.chain.push(block)
+                            }else{
+                                res.json({
+                                    type: 'error',
+                                    error: {
+                                        message: "Your chain are broken!",
+                                        code: "0001"
+                                    }
+                                })
+                                return
+                            }
+                        }
+                        res.json({
+                            type: 'new-chain-test',
+                            data: triade.chain
+                        })
+                        return
+                    }
+                }
+            } else {
+                res.json({
+                    type: 'new-chain-test',
+                    data: triade.chain
+                })
+                return
             }
         }else if(type === 'get-chain-header' ){
 
