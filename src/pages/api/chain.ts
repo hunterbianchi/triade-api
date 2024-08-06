@@ -579,19 +579,19 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                                 })
                                 return
                             }
-                        } else {
-                            res.json({
-                                type: 'error',
-                                error: {
-                                    message: "Your chain are broken!",
-                                    code: "0001"
-                                }
-                            })
-                            return
                         }
                         res.json({
                             type: 'new-chain-test',
                             data: triade.chain
+                        })
+                        return
+                    } else {
+                        res.json({
+                            type: 'error',
+                            error: {
+                                message: "Your chain are broken!",
+                                code: "0001"
+                            }
                         })
                         return
                     }
