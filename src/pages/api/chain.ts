@@ -569,7 +569,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
         
                             if(block.previousHash === triade.chain[triade.chain.length - 1].hash && block.hash === SHA256(block.timestamp+block.previousHash+JSON.stringify(block.contracts)+block.nonce).toString()){
                                 triade.chain.push(block)
-                            }else{
+                            } else {
                                 res.json({
                                     type: 'error',
                                     error: {
@@ -579,6 +579,15 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                                 })
                                 return
                             }
+                        } else {
+                            res.json({
+                                type: 'error',
+                                error: {
+                                    message: "Your chain are broken!",
+                                    code: "0001"
+                                }
+                            })
+                            return
                         }
                         res.json({
                             type: 'new-chain-test',
