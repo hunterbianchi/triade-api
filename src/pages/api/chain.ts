@@ -591,7 +591,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                             error: {
                                 message: "Your chain are broken!",
                                 code: "0001"
-                            }
+                            },
                             data: triade.chain
                         })
                         return
