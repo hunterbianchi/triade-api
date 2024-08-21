@@ -102,7 +102,7 @@ export class BlockChain {
         this.chain = [this.createGenesisBlock()]
         this.target = this.getDifficulty()
         this.pendingContracts = []
-        this.fee = 100000000000
+        this.fee = 100000000000000
         this.nodes = ["https://triade-api.vercel.app/api/chain"]
     }
   
