@@ -531,7 +531,9 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
         }else if(type === 'get-chain' ){
 
             // console.log(req.body)
-        triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
+            if(triade.chain.length < 15){
+                triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
+            }
 
             return res.json({
                 type: 'new-chain',

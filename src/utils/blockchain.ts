@@ -109,9 +109,6 @@ export class BlockChain {
     
     updateChain(newChain: Array<any>){
 
-        if(newChain.length > 15){
-            return
-        }
         if(newChain.length > this.chain.length){
             // console.log(`\t\t|\tReceived a larger (size: ${newChain.length}) chain...\n`)
             // console.log(`${newChain[0].hash}\n${this.chain[0].hash}`)
