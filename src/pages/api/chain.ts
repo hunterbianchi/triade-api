@@ -598,7 +598,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         res.json({
                             type: 'error',
                             error: {
-                                message: "Your chain are broken!",
+                                message: "Your chain are broken! Last hash not equal",
                                 code: "0001"
                             },
                             data: triade.chain
@@ -609,7 +609,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                     res.json({
                         type: 'error',
                         error: {
-                            message: "Your chain are broken!",
+                            message: "Your chain are broken! Genesis hash not equal",
                             code: "0001"
                         },
                         data: triade.chain
