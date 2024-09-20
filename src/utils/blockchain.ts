@@ -184,7 +184,16 @@ export class BlockChain {
             if (!contract.isValid()) {
                 throw new Error('Cannot add invalid contract to the chain');
             }
-            this.pendingContracts.push(contract);
+            
+            const isHere = this.pendingContracts.some(newContract=>{
+
+                return (newContract.hash === contract.hash && contract.signature === contract.signature)
+            
+            })
+            if (!isHere) {
+
+                this.pendingContracts.push(contract);
+            }
         } else {throw new Error('No founds')}
     }
 

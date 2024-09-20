@@ -446,8 +446,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             newToken.data.dataHash = SHA256(`${newToken.data.businessRating}${newToken.data.businessWallet}${newToken.data.businessName}${newToken.data.businessImage}${newToken.data.businessService}${newToken.data.businessProducts?JSON.stringify(newToken.data.businessProducts):null}${newToken.data.businessAddress?newToken.data.addressHash:null}`).toString()
             
             newToken.header.hash = SHA256(`${newToken.header.timestamp}${newToken.header.owner}${newToken.header.toAddress}${newToken.header.amount}${newToken.data.dataHash}`).toString()
-            
-            
+
             // console.log(newToken)
 
             const timestamp = newToken.header.timestamp
@@ -470,40 +469,29 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         // console.log("Valid Signature")
                         
                         if(triade.getBalanceOfAddress(owner) >= amount){
-                            if(token.header.timestamp > triade.chain[triade.chain.length-1].token.header.timestamp){
-                                // const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
-                                const contract = new Contract(timestamp, owner, toAddress, amount, token, signature)
+                            // const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
+                            const contract = new Contract(timestamp, owner, toAddress, amount, token, signature)
 
-                                // console.log(`New Contract:\n${JSON.stringify(contract)}`)
+                            // console.log(`New Contract:\n${JSON.stringify(contract)}`)
 
-                                if(contract.isValid()){
+                            if(contract.isValid()){
 
-                                    // console.log(`Is Valid?: ${(contract.isValid())}`)
-                                    triade.addContract(contract)
-                                    // "8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505"
-                            triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
-                                    // console.log(triade.pendingContracts)
-                                    
-                                    return res.json({
-                                        type: 'new-business',
-                                        data: contract
-                                    })
-                                }else{
-
-                                    return res.json({
-                                        type: 'error',
-                                        error: {
-                                            message: "\tContract is not valid.\nIt means that it ain't no signature, addresses or signature not related to owner's address",
-                                            code: "0001"
-                                        }
-                                    })
-                                }
-
+                                // console.log(`Is Valid?: ${(contract.isValid())}`)
+                                triade.addContract(contract)
+                                // "8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505"
+                        triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
+                                // console.log(triade.pendingContracts)
+                                
+                                return res.json({
+                                    type: 'new-business',
+                                    data: contract
+                                })
                             }else{
+
                                 return res.json({
                                     type: 'error',
                                     error: {
-                                        message: "You cannot create contracts in the past.\n\nVerify you contract's timestamp",
+                                        message: "\tContract is not valid.\nIt means that it ain't no signature, addresses or signature not related to owner's address",
                                         code: "0001"
                                     }
                                 })
@@ -512,7 +500,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                             return res.json({
                                 type: 'error',
                                 error: {
-                                    message: "YOU ARE A BROKE!!! Hehe...\n\nCheck your balance or buy some TADs",
+                                    message: "YOU ARE BROKE!!! Hehe...\n\nCheck your balance or buy some TADs",
                                     code: "0001"
                                 }
                             })
