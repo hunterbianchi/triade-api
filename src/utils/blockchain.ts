@@ -181,19 +181,34 @@ export class BlockChain {
             if (contract.isValid()) {
                 // console.log(`Nice!`)
             }
+            
             if (!contract.isValid()) {
                 throw new Error('Cannot add invalid contract to the chain');
             }
             
-            const isHere = this.pendingContracts.some(newContract=>{
-
-                return (newContract.hash === contract.hash && contract.signature === contract.signature)
-            
+            const isMined = this.chain.some(block=>{
+                block.contracts.some(minedContract=>{
+                    return (minedContract.hash === contract.hash && minedContract.signature === contract.signature)
+                })
             })
-            if (!isHere) {
-
+            
+            let isPending = this.pendingContracts.some(pendingContract=>{
+                return (pendingContract.hash === contract.hash && pendingContract.signature === contract.signature) && !isMined
+            })
+            
+            if(isMined && isPending){
+                const currentPendingList = this.pendingContracts.find(currentContract=>{
+                    return currentContract.hash !== contract.hash && currentContract.signature !== contract.signature
+                })
+                
+                Object.assign(this.pendingContracts, currentPendingList)
+                isPending = false
+            }
+            
+            if (!isPending) {
                 this.pendingContracts.push(contract);
             }
+            
         } else {throw new Error('No founds')}
     }
 

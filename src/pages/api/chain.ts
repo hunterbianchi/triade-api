@@ -303,7 +303,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 }
             })
 
-        }else if(type === 'new-business' ){
+        }else if(type === 'new-business'){
 
             // curl http://localhost:3000/api/chain  -H 'Content-Type':'application/json' -X POST -d '{"type":"new-business","data":{"header":{"timestamp":1672934475153,"owner":"04f731c8a283a95770c0541dbe9d477724ea8321153934c9734876699c23f0b3c8b4de30cb87385aa561045e30639ae5718e8cee1a7cc6499765c4135da21bcb21","toAddress":"00000000","amount":0,"hash":"f1989dd4310cb0ec724f0b883dddf7b3306ad20f5261d666854b5957d3f7fcb9","signature":"3045022018e142aba95d932b6e66535c492b835624976efe25ec6d400d739d68bd598d5d022100fb08bebda5b61e03e5963949d5c9234f1d611f4f5d71bf4b8ab9226e5208170e"},"data":{"businessRating":5,"businessWallet":"047721abc10f1bc6bc42539dc731b35159cb4c22fbc9086255e5c01cd2e46d435cd07c491bde9ad541afdc6e1fb7ccb57fef96adb410fda6ef1edf164dc4bc7036","businessName":"Anonymous","businessService":"commerce","businessProducts":[],"businessImage":"","dataHash":"7ea0fc36b8fade4fa2d1bffd66c92c80332704bc6175706f31cd1615d796d60e"}}}'
 
@@ -484,7 +484,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                                 
                                 return res.json({
                                     type: 'new-business',
-                                    data: contract
+                                    data: triade.pendingContracts
                                 })
                             }else{
 
