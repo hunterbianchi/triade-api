@@ -188,17 +188,17 @@ export class BlockChain {
             
             const isMined = this.chain.some(block=>{
                 block.contracts.some(minedContract=>{
-                    return (minedContract.hash === contract.hash && minedContract.signature === contract.signature)
+                    return (minedContract.hash === contract.hash && minedContract.timestamp === contract.timestamp)
                 })
             })
             
             let isPending = this.pendingContracts.some(pendingContract=>{
-                return (pendingContract.hash === contract.hash && pendingContract.signature === contract.signature) && !isMined
+                return (pendingContract.hash === contract.hash && pendingContract.timestamp === contract.timestamp) && !isMined
             })
             
             if(isMined && isPending){
                 const currentPendingList = this.pendingContracts.find(currentContract=>{
-                    return currentContract.hash !== contract.hash && currentContract.signature !== contract.signature
+                    return currentContract.hash !== contract.hash && currentContract.timestamp !== contract.timestamp
                 })
                 
                 Object.assign(this.pendingContracts, currentPendingList)
