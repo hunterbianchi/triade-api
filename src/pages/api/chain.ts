@@ -229,6 +229,19 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 data: triade.pendingContracts
             })
             return
+        }else if(type === 'add-pending-datas' ){
+            
+            const newPendingDatas = body.data
+            
+            newPendingDatas.forEach(contract=>{
+                triade.addContract(contract)
+            })
+            
+            res.json({
+                type: 'new-pending-datas',
+                data: triade.pendingContracts
+            })
+            return
         }else if(type === 'get-token-post-price' ){
             /* 
             {
@@ -469,18 +482,12 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                         // console.log("Valid Signature")
                         
                         if(triade.getBalanceOfAddress(owner) >= amount){
-                            // const contract = new Contract(owner, toAddress, amount, token, token.header.signature)
                             const contract = new Contract(timestamp, owner, toAddress, amount, token, signature)
-
-                            // console.log(`New Contract:\n${JSON.stringify(contract)}`)
 
                             if(contract.isValid()){
 
-                                // console.log(`Is Valid?: ${(contract.isValid())}`)
                                 triade.addContract(contract)
-                                // "8297e903759c97801f36618bbf14327bf0121e8a54c6fb5002ed831a3bcbd505"
-                        triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
-                                // console.log(triade.pendingContracts)
+                                                    triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
                                 
                                 return res.json({
                                     type: 'new-business',
