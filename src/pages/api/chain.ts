@@ -203,8 +203,8 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             return
         }else if(type === 'get-balance'){
 
-          // const wallet = body.data
-          const wallet = '04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df'
+          const wallet = body.data
+          // const wallet = '04aeed00ae475d1ffed773774321267db1128833d72010c192bf8fe51bcac7fe75e34de763921d7aec7771c3dbcce7abdf2a27e51f96d8f4024ccb463b402e79df'
           const balance = triade.getBalanceOfAddress(wallet)
 
             return res.json({
