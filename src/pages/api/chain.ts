@@ -233,7 +233,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             
             const newPendingDatas = body.data
             
-            newPendingDatas.forEach(contract=>{
+            newPendingDatas.forEach((contract: any)=>{
                 triade.addContract(contract)
             })
             

@@ -186,8 +186,8 @@ export class BlockChain {
                 throw new Error('Cannot add invalid contract to the chain');
             }
             
-            const isMined = this.chain.some(block=>{
-                block.contracts.some(minedContract=>{
+            const isMined = this.chain.some((block: any)=>{
+                block.contracts.some((minedContract: any)=>{
                     return (minedContract.hash === contract.hash && minedContract.timestamp === contract.timestamp)
                 })
             })
