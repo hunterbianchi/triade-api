@@ -136,7 +136,7 @@ function addOrder(order:any){
         
         const tokensNeeded = (order.amount)*order.quotes
         
-        if(balance<tokensNeeded){
+        if(ownerBalance<tokensNeeded){
             throw new Error("No found to sign this Order")
         }
         
