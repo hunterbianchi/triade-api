@@ -68,34 +68,85 @@ type BusinessType = {
 }
 
 
-const offerList: any[] = [{
-    type: 'transaction',
-    fromAddress: '0xE54a2Ba0518a52E7d5f753C40a4aC514CFBaA0f7',
-    toAddress: '',
-    amount: 20,
-}]
-
-const orderList: any[] = [{
-    type: 'transaction',
-    fromAddress: '0xE54a2Ba0518a52E7d5f753C40a4aC514CFBaA0f7',
-    toAddress: '',
-    amount: 20,
-}]
-
-
-function addOrder(order:any){
-    if(!orderList.every((value)=>(value.hash === order.hash)) || order.hash === SHA256(order.amount + order.fromAddress).toString()){
-        orderList.push(order)
+const offerList: any[] = [
+    {
+        type: 'transaction',
+        fromAddress: null,
+        quotes: 1,
+        toAddress: 'client_address',
+        amount: 0.5,
+        brlPrice: 1850
     }
+]
+
+const orderList: any[] = [
+    {
+        type: 'allotment',
+        fromAddress: 'exchange_address',
+        quotes: 1,
+        toAddress: '',
+        amount: 50,
+        brlPrice: 30000
+    },{
+        type: 'village',
+        fromAddress: 'exchange_address',
+        quotes: 7,
+        toAddress: '',
+        amount: 35,
+        brlPrice: 30000
+    },{
+        type: 'townhouse',
+        fromAddress: 'exchange_address',
+        quotes: 20,
+        toAddress: '',
+        amount: 15,
+        brlPrice: 40000
+    }
+]
+
+function virifySignature(sig: string, hash: string, publicKey: string){
+    return true
 }
-function removeOrder(order:any){}
 
 function addOffer(offer:any){
-    if(!offerList.every((value)=>(value.hash === offer.hash)) || offer.hash === SHA256(offer.amount + offer.fromAddress).toString()){
-        offerList.push(offer)
+    
+    if(!offerList.some((value)=>(value.hash === offer.hash))){
+    
+         if(offer.hash === SHA256(offer.amount + offer.quotes + offer.fromAddress + offer.brlPrice).toString()){
+         
+            if(virifySignature(offer.signature, offer.hash, offer.fromAddress)){
+            
+                offerList.push(offer)
+            }
+        }
     }
 }
+
 function removeOffer(offer:any){}
+
+function addOrder(order:any){
+
+    if(!orderList.some((value)=>(value.hash === order.hash))){
+        
+        const ownerBalance = triade.getBalanceOfAddress(order.fromAddress)
+        
+        const tokensNeeded = (order.amount)*order.quotes
+        
+        if(balance<tokensNeeded){
+            throw new Error("No found to sign this Order")
+        }
+        
+        if(order.hash === SHA256(order.amount + order.quotes + order.fromAddress + order.brlPrice).toString()){
+            
+            if(virifySignature(order.signature, order.hash, order.fromAddress)){
+            
+                orderList.push(order)
+            }
+        }
+    }
+}
+
+function removeOrder(order:any){}
 
 function getChainHeader(){
 
