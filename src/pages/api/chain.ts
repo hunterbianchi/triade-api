@@ -230,8 +230,21 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
         }
  */
         
-        if(type === 'new-offer' ){
-            addOffer(body.data)
+        if(type === 'add-offer' ){
+            try{
+                addOffer(body.data)
+            }catch(err){
+                res.json({
+                    type: 'error',
+                    error: err,
+                    data: {
+                        offerList,
+                        orderList,
+                        chainHeader: getChainHeader()
+                    }
+                })
+                return
+            }
             res.json({
                 type: 'new-offer-list',
                 data: {
@@ -241,8 +254,21 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 }
             })
             return
-        }else if(type === 'new-order' ){
-            addOrder(body.data)
+        }else if(type === 'add-order' ){
+            try{
+                addOrder(body.data)
+            } catch(err){
+                res.json({
+                    type: 'error',
+                    error: err,
+                    data: {
+                        offerList,
+                        orderList,
+                        chainHeader: getChainHeader()
+                    }
+                })
+                return
+            }
             res.json({
                 type: 'new-order-list',
                 data: {
