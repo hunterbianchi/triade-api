@@ -254,7 +254,41 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
                 }
             })
             return
+        }else if(type === 'get-exchange-booking' ){
+            res.json({
+                type: 'new-order-list',
+                data: {
+                    offerList,
+                    orderList,
+                    chainHeader: getChainHeader()
+                }
+            })
+            return
         }else if(type === 'add-order' ){
+            try{
+                addOrder(body.data)
+            } catch(err){
+                res.json({
+                    type: 'error',
+                    error: err,
+                    data: {
+                        offerList,
+                        orderList,
+                        chainHeader: getChainHeader()
+                    }
+                })
+                return
+            }
+            res.json({
+                type: 'new-order-list',
+                data: {
+                    offerList,
+                    orderList,
+                    chainHeader: getChainHeader()
+                }
+            })
+            return
+        }else if(type === 'add-order-list' ){
             try{
                 addOrder(body.data)
             } catch(err){
