@@ -116,7 +116,7 @@ function addOffer(offer:any){
     
     if(!offerList.some((value)=>(value.hash === offer.hash))){
     
-         if(offer.hash === SHA256(offer.amount + offer.quotes + offer.fromAddress + offer.brlPrice offer.timestamp).toString()){
+         if(offer.hash === SHA256(offer.amount + offer.quotes + offer.fromAddress + offer.brlPrice + offer.timestamp).toString()){
          
             if(virifySignature(offer.signature, offer.hash, offer.fromAddress)){
             
