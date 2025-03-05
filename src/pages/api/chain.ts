@@ -89,7 +89,7 @@ const orderList: any[] = [
         descriptionTxt: 'Cota "Allotment". 50 TAD por 30.000,00 Reais.\n\nÚtil em todos os metaversos do Grupo TRÍADE',
         timestamp: 1740949581905,
         fromAddress: 'exchange_address',
-        quotes: 1,
+        quotes: 0,
         toAddress: '',
         amount: 50,
         brlPrice: 30000
