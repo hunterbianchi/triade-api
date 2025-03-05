@@ -83,6 +83,9 @@ const offerList: any[] = [
 const orderList: any[] = [
     {
         type: 'allotment',
+        prices: [600.00, 857.14, 857.14, 2666.67, 2666.67, 3000.00],
+        months: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+        descriptionTxt: 'Cota "Allotment". 50 TAD por 30.000,00 Reais.\n\nÚtil em todos os metaversos do Grupo TRÍADE',
         timestamp: 1740949581905,
         fromAddress: 'exchange_address',
         quotes: 1,
@@ -91,6 +94,9 @@ const orderList: any[] = [
         brlPrice: 30000
     },{
         type: 'village',
+        prices: [857.14, 2666.67, 2666.67, 3000.00],
+        months: ["Mar", "Abr", "Mai", "Jun"],
+        descriptionTxt: 'Cota "Village". 35 TAD por 30.000,00 Reais.\n\nÚtil em todos os metaversos do Grupo TRÍADE',
         timestamp: 1740949581905,
         fromAddress: 'exchange_address',
         quotes: 7,
@@ -99,6 +105,9 @@ const orderList: any[] = [
         brlPrice: 30000
     },{
         type: 'townhouse',
+        prices: [2666.67, 3000.00],
+        months: ["Mai", "Jun"],
+        descriptionTxt: 'Cota "Townhouse". 15 TAD por 40.000,00 Reais.\n\nÚtil em todos os metaversos do Grupo TRÍADE',
         timestamp: 1740949581905,
         fromAddress: 'exchange_address',
         quotes: 20,
