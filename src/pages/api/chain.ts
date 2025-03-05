@@ -71,6 +71,7 @@ type BusinessType = {
 const offerList: any[] = [
     {
         type: 'transaction',
+        timestamp: 1740949581905,
         fromAddress: null,
         quotes: 1,
         toAddress: 'client_address',
@@ -82,6 +83,7 @@ const offerList: any[] = [
 const orderList: any[] = [
     {
         type: 'allotment',
+        timestamp: 1740949581905,
         fromAddress: 'exchange_address',
         quotes: 1,
         toAddress: '',
@@ -89,6 +91,7 @@ const orderList: any[] = [
         brlPrice: 30000
     },{
         type: 'village',
+        timestamp: 1740949581905,
         fromAddress: 'exchange_address',
         quotes: 7,
         toAddress: '',
@@ -96,6 +99,7 @@ const orderList: any[] = [
         brlPrice: 30000
     },{
         type: 'townhouse',
+        timestamp: 1740949581905,
         fromAddress: 'exchange_address',
         quotes: 20,
         toAddress: '',
@@ -112,7 +116,7 @@ function addOffer(offer:any){
     
     if(!offerList.some((value)=>(value.hash === offer.hash))){
     
-         if(offer.hash === SHA256(offer.amount + offer.quotes + offer.fromAddress + offer.brlPrice).toString()){
+         if(offer.hash === SHA256(offer.amount + offer.quotes + offer.fromAddress + offer.brlPrice offer.timestamp).toString()){
          
             if(virifySignature(offer.signature, offer.hash, offer.fromAddress)){
             
@@ -138,7 +142,7 @@ function addOrder(order:any){
         
         if(order.hash === SHA256(order.amount + order.quotes + order.fromAddress + order.brlPrice).toString()){
             
-            if(virifySignature(order.signature, order.hash, order.fromAddress)){
+            if(virifySignature(order.signature, order.hash, order.fromAddress + order.timestamp)){
             
                 orderList.push(order)
             }
