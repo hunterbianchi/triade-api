@@ -256,7 +256,7 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             return
         }else if(type === 'get-exchange-booking' ){
             res.json({
-                type: 'new-order-list',
+                type: 'new-exchange-booking',
                 data: {
                     offerList,
                     orderList,
