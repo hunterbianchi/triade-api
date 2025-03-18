@@ -746,17 +746,10 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             }
         }else if(type === 'get-chain-header' ){
 
-            if(body.data.genesisHash === getChainHeader().genesisHash){
-                res.json({
-                    type: 'new-chain-header',
-                    data: getChainHeader()
-                })
-            } else {
-                res.json({
-                    type: 'new-chain-header',
-                    data: getChainHeader()
-                })          
-            }
+            res.json({
+                type: 'new-chain-header',
+                data: getChainHeader()
+            })
 
         }else if(type === 'new-block' ){
 
