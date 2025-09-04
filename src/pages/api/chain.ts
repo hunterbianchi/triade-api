@@ -350,6 +350,20 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
             })
             return
         }else if(type === 'get-pending-datas' ){
+
+            if(body.data.length > 0){
+                const newPendingDatas = body.data
+
+                newPendingDatas.forEach((contract: any)=>{
+                    triade.addContract(contract)
+                })
+                
+                res.json({
+                    type: 'new-pending-datas',
+                    data: triade.pendingContracts
+                })
+                return
+            }
             
             res.json({
                 type: 'new-pending-datas',
