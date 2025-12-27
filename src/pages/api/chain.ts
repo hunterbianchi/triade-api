@@ -76,7 +76,7 @@ const offerList: any[] = [
         quotes: 1,
         toAddress: 'client_address',
         amount: 0.5,
-        brlPrice: 1850
+        brlPrice: 3800
     }
 ]
 
