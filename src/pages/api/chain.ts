@@ -665,7 +665,36 @@ export default async function handle (req: NextApiRequest, res: NextApiResponse)
 
         }else if(type === 'get-chain' ){
 
-            // console.log(req.body)
+            const newChain = req.body.data
+            
+            console.log(newChain.length)
+
+            if(triade.chain.length - newChain.length >= 6){
+                return res.json({
+                    type: 'new-chain',
+                    data: triade.chain
+                })
+            }
+
+            if(newChain.length - triade.chain.length >= 6){
+                return res.json({
+                    type: 'new-chain',
+                    data: newChain
+                })
+            }
+
+            if(newChain.length >= triade.chain.length){
+                return res.json({
+                    type: 'new-chain',
+                    data: newChain
+                })
+            } else {
+                return res.json({
+                    type: 'new-chain',
+                    data: triade.chain
+                })
+            }
+            
             if(triade.chain.length < 16 && false){
                 triade.minePendingContracts("042ef6646dacb5c148271654305981d5d96324624328a17a819f81ae30b44bf9ce898e2bf955b3fdc6c5404ac0bd96e98e5569d871fdee5c44d2fe7abb3e565a37")
             }
