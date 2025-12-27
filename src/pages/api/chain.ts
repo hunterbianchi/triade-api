@@ -117,6 +117,14 @@ const orderList: any[] = [
         toAddress: '',
         amount: 15,
         brlPrice: 40000
+    },{
+        type: 'transaction',
+        timestamp: 1740949581905,
+        fromAddress: null,
+        quotes: 1,
+        toAddress: 'client_address',
+        amount: 0.5,
+        brlPrice: 3900
     }
 ]
 
